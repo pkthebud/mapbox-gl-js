@@ -1,0 +1,12 @@
+<tr class="<%- r.status %> <%- (hasFailedTests && /passed/.test(r.status)) ? 'hide' : '' %>">
+    <td><pre><%- r.expression %></pre></td>
+    <td>
+        <h2 style="text-align:center; background:<%- r.color %>"><a href="<%- r.group %>/case.json"><%- r.group %>/<%- r.test %></a></h2>
+        <pre><%- r.difference %></pre>
+    </td>
+    <td>
+        <div style="max-width: 400px; overflow: scroll;">
+            <pre><%- r.compiledJs %></pre>
+        </div>
+    </td>
+</tr>
