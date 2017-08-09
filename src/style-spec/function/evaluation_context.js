@@ -5,7 +5,7 @@ const parseColor = require('../util/parse_color');
 const interpolate = require('../util/interpolate');
 const interpolationFactor = require('./interpolation_factor');
 const bezier = require('bezier-easing');
-const {parseType, NumberType, ObjectType} = require('./types');
+const {toString, NumberType, ObjectType} = require('./types');
 const {Color, typeOf, isValue} = require('./values');
 const {checkSubtype} = require('./expression');
 
@@ -56,25 +56,17 @@ module.exports = () => ({
 
     typeOf: function (x: Value): string {
         assert(isValue(x), `Invalid value ${String(x)}`);
-        return typeOf(x).name;
+        return toString(typeOf(x));
     },
 
-    as: function (value: Value, expectedType: string | Type, name?: string) {
-        assert(isValue(value), `Invalid value ${String(value)}`);
+    as: function (value: Value, expectedType: Type, name?: string) {
+        assert(isValue(value), `Invalid value ${JSON.stringify(value)}`);
+        assert(expectedType.kind, `Invalid type ${JSON.stringify(expectedType)}`);
+
         const type = typeOf(value);
-        if (typeof expectedType === 'string') {
-            const parsed = parseType(expectedType);
-            if (!parsed) {
-                throw new RuntimeError(`Unknown type ${expectedType}`);
-            }
-            expectedType = parsed;
-        }
-        // At compile time, types are nullable, but for runtime type
-        // assertions, check that the value is a non-null instance of the
-        // expected type.
         const typeError = (value === null && expectedType.name !== 'Null') ||
             checkSubtype(expectedType, type);
-        ensure(!typeError, `Expected ${name || 'value'} to be of type ${expectedType.name}, but found ${type.name} instead.`);
+        ensure(!typeError, `Expected ${name || 'value'} to be of type ${toString(expectedType)}, but found ${toString(type)} instead.`);
         return value;
     },
 

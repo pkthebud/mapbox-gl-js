@@ -1,5 +1,6 @@
 // @flow
 
+const { toString } = require('./types');
 const { parseExpression, ParsingContext, checkSubtype } = require('./expression');
 const assert = require('assert');
 
@@ -109,7 +110,7 @@ class CompoundExpression implements Expression {
                 .map(([params]) => stringifySignature(params))
                 .join(' | ');
             const actualTypes = parsedArgs
-                .map(arg => arg.type.name)
+                .map(arg => toString(arg.type))
                 .join(', ');
             context.error(`Expected arguments of type ${signatures}, but found (${actualTypes}) instead.`);
         }
@@ -135,9 +136,9 @@ function varargs(type: Type): Varargs {
 
 function stringifySignature(signature: Signature): string {
     if (Array.isArray(signature)) {
-        return `(${signature.map(param => param.name).join(', ')})`;
+        return `(${signature.map(toString).join(', ')})`;
     } else {
-        return `(${signature.type.name}...)`;
+        return `(${toString(signature.type)}...)`;
     }
 }
 

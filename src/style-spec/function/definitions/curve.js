@@ -1,8 +1,8 @@
 // @flow
 
 const {
-    NumberType,
-    ColorType
+    toString,
+    NumberType
 } = require('../types');
 const { parseExpression } = require('../expression');
 
@@ -101,10 +101,10 @@ class Curve implements Expression {
         }
 
         if (interpolation.name !== 'step' &&
-            outputType !== NumberType &&
-            outputType !== ColorType &&
-            !(outputType.kind === 'array' && outputType.itemType === NumberType)) {
-            return context.error(`Type ${outputType.name} is not interpolatable, and thus cannot be used as a ${interpolation.name} curve's output type.`, 1);
+            outputType.kind !== 'Number' &&
+            outputType.kind !== 'Color' &&
+            !(outputType.kind === 'Array' && outputType.itemType.kind !== 'Number')) {
+            return context.error(`Type ${toString(outputType)} is not interpolatable, and thus cannot be used as a ${interpolation.name} curve's output type.`, 1);
         }
 
         return new Curve(context.key, outputType, interpolation, input, stops);
@@ -120,9 +120,7 @@ class Curve implements Expression {
             outputs.push(`function () { return ${expression.compile()}; }.bind(this)`);
         }
 
-        const interpolationType =
-            this.type === ColorType ? 'color' :
-            this.type.kind === 'array' ? 'array' : 'number';
+        const interpolationType = this.type.kind.toLowerCase();
 
         return `this.evaluateCurve(
             ${input},

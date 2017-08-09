@@ -2,6 +2,7 @@
 
 const { parseExpression } = require('../expression');
 const {
+    toString,
     array,
     ValueType,
     StringType,
@@ -64,14 +65,14 @@ class ArrayAssertion implements Expression {
     }
 
     compile() {
-        return `this.as(${this.input.compile()}, '${this.type.name}')`;
+        return `this.as(${this.input.compile()}, ${JSON.stringify(this.type)})`;
     }
 
     serialize() {
         if (typeof this.type.N === 'number') {
-            return [ 'array', this.type.itemType.name, this.type.N, this.input.serialize() ];
-        } else if (this.type.itemType !== ValueType) {
-            return [ 'array', this.type.itemType.name, this.input.serialize() ];
+            return [ 'array', toString(this.type.itemType), this.type.N, this.input.serialize() ];
+        } else if (this.type.itemType.kind !== 'value') {
+            return [ 'array', toString(this.type.itemType), this.input.serialize() ];
         } else {
             return [ 'array', this.input.serialize() ];
         }
