@@ -110,6 +110,16 @@ CompoundExpression.register(expressions, {
     'asin': defineMathFunction('asin', 1),
     'acos': defineMathFunction('acos', 1),
     'atan': defineMathFunction('atan', 1),
+    'min': [
+        NumberType,
+        varargs(NumberType),
+        (args) => `Math.min(${args.join(', ')})`
+    ],
+    'max': [
+        NumberType,
+        varargs(NumberType),
+        (args) => `Math.max(${args.join(', ')})`
+    ],
     '==': defineComparisonOp('=='),
     '!=': defineComparisonOp('!='),
     '>': defineComparisonOp('>'),
