@@ -24,16 +24,15 @@ class Case implements Expression {
     }
 
     static parse(args: Array<mixed>, context: ParsingContext) {
-        args = args.slice(1);
-        if (args.length < 3)
-            return context.error(`Expected at least 3 arguments, but found only ${args.length}.`);
-        if (args.length % 2 === 0)
+        if (args.length < 4)
+            return context.error(`Expected at least 3 arguments, but found only ${args.length - 1}.`);
+        if (args.length % 2 !== 0)
             return context.error(`Expected an odd number of arguments.`);
 
         let outputType: ?Type = context.expectedType;
 
         const branches = [];
-        for (let i = 0; i < args.length - 1; i += 2) {
+        for (let i = 1; i < args.length - 1; i += 2) {
             const test = parseExpression(args[i], context.concat(i, BooleanType));
             if (!test) return null;
 
@@ -45,7 +44,7 @@ class Case implements Expression {
             outputType = outputType || result.type;
         }
 
-        const otherwise = parseExpression(args[args.length - 1], context.concat(args.length, outputType));
+        const otherwise = parseExpression(args[args.length - 1], context.concat(args.length - 1, outputType));
         if (!otherwise) return null;
 
         assert(outputType);

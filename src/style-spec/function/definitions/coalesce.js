@@ -18,10 +18,12 @@ class Coalesce implements Expression {
     }
 
     static parse(args: Array<mixed>, context: ParsingContext) {
-        args = args.slice(1);
+        if (args.length < 2) {
+            return context.error("Expectected at least one argument.");
+        }
         let outputType = context.expectedType;
         const parsedArgs = [];
-        for (const arg of args) {
+        for (const arg of args.slice(1)) {
             const argContext = context.concat(1 + parsedArgs.length, outputType);
             const parsed = parseExpression(arg, argContext);
             if (!parsed) return null;

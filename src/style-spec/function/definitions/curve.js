@@ -34,14 +34,17 @@ class Curve implements Expression {
     }
 
     static parse(args: Array<mixed>, context: ParsingContext) {
-        args = args.slice(1);
-        if (args.length < 4)
-            return context.error(`Expected at least 2 arguments, but found only ${args.length}.`);
+        if (args.length < 5)
+            return context.error(`Expected at least 4 arguments, but found only ${args.length - 1}.`);
 
-        let [interpolation, input, ...rest] = args;
+        if (args.length % 2 !== 1) {
+            return context.error("Expected an even number of arguments.");
+        }
+
+        let [ , interpolation, input, ...rest] = args;
 
         if (!Array.isArray(interpolation) || interpolation.length === 0) {
-            return context.error(`Expected an interpolation type expression, but found ${String(interpolation)} instead.`, 1);
+            return context.error(`Expected an interpolation type expression.`, 1);
         }
 
         if (interpolation[0] === 'step') {
