@@ -8,7 +8,7 @@ import type { Expression, ParsingContext } from '../expression';
 import type { Type } from '../types';
 
 // Map input label values to output expression index
-type Cases = {[number | string | boolean]: number};
+type Cases = {[number | string]: number};
 
 class Match implements Expression {
     key: string;
@@ -54,8 +54,8 @@ class Match implements Expression {
             }
 
             for (const label of labels) {
-                if (typeof label !== 'number' && typeof label !== 'string' && typeof label !== 'boolean') {
-                    return labelContext.error(`Branch labels must be numbers, strings, or booleans.`);
+                if (typeof label !== 'number' && typeof label !== 'string') {
+                    return labelContext.error(`Branch labels must be numbers or strings.`);
                 } else if (!inputType) {
                     inputType = typeOf(label);
                 } else if (checkSubtype(inputType, typeOf(label), labelContext)) {
