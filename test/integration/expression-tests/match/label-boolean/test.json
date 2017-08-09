@@ -17,24 +17,10 @@
   ],
   "expected": {
     "compiled": {
-      "result": "success",
-      "isFeatureConstant": false,
-      "isZoomConstant": true,
-      "type": "String"
-    },
-    "outputs": [
-      "match",
-      "otherwise",
-      {
-        "error": "Expected value to be of type Boolean, but found String instead."
-      },
-      {
-        "error": "Expected value to be of type Boolean, but found Number instead."
-      },
-      {
-        "error": "Expected value to be of type Boolean, but found Null instead."
-      },
-      {"error": "Property 'x' not found in feature.properties"}
-    ]
+      "result": "error",
+      "errors": [
+        {"key": "[2]", "error": "Branch labels must be numbers or strings."}
+      ]
+    }
   }
 }
