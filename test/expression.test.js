@@ -4,7 +4,7 @@ require('flow-remove-types/register');
 const util = require('../src/util/util');
 const expressionSuite = require('./integration').expression;
 const compileExpression = require('../src/style-spec/function/compile');
-const {parseType} = require('../src/style-spec/function/types');
+const { toString } = require('../src/style-spec/function/types');
 
 let tests;
 
@@ -15,7 +15,7 @@ if (process.argv[1] === __filename && process.argv.length > 2) {
 expressionSuite.run('js', {tests: tests}, (fixture) => {
     let type;
     if (fixture.expectExpressionType) {
-        type = parseType(fixture.expectExpressionType);
+        type = fixture.expectExpressionType;
     }
     const compiled = compileExpression(fixture.expression, type);
 
@@ -23,7 +23,7 @@ expressionSuite.run('js', {tests: tests}, (fixture) => {
         compiled: util.pick(compiled, ['result', 'functionSource', 'isFeatureConstant', 'isZoomConstant', 'errors'])
     };
     if (compiled.result === 'success') {
-        result.compiled.type = compiled.expression.type.name;
+        result.compiled.type = toString(compiled.expression.type);
 
         const evaluate = fixture.inputs || [];
         const evaluateResults = [];

@@ -1,5 +1,5 @@
 {
-  "expectExpressionType": "Array<String, 2>",
+  "expectExpressionType": {"kind": "Array", "itemType": {"kind": "String"}, "N": 2},
   "expression": ["array", "number", 2, ["get", "x"]],
   "inputs": [],
   "expected": {

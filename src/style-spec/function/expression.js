@@ -10,7 +10,8 @@ const {
     ObjectType,
     ColorType,
     ValueType,
-    array
+    array,
+    toString
 } = require('./types');
 
 export interface Expression {
@@ -191,13 +192,13 @@ function checkSubtype(
     t: Type,
     context?: ParsingContext
 ): ?string {
-    let error = `Expected ${expected.name} but found ${t.name} instead.`;
+    let error = `Expected ${toString(expected)} but found ${toString(t)} instead.`;
 
     // a `null` literal is allowed anywhere.
-    if (t.name === 'Null') return null;
+    if (t.kind === 'Null') return null;
 
-    if (expected.name === 'Value') {
-        if (t === expected) return null;
+    if (expected.kind === 'Value') {
+        if (t.kind === 'Value') return null;
         const members = [
             NumberType,
             StringType,
@@ -215,12 +216,8 @@ function checkSubtype(
 
         if (context) context.error(error);
         return error;
-    } if (expected.kind === 'primitive') {
-        if (t === expected) return null;
-        if (context) context.error(error);
-        return error;
-    } else if (expected.kind === 'array') {
-        if (t.kind === 'array') {
+    } else if (expected.kind === 'Array') {
+        if (t.kind === 'Array') {
             const itemError = checkSubtype(expected.itemType, t.itemType);
             if (itemError) {
                 error = `${error} (${itemError})`;
@@ -236,9 +233,11 @@ function checkSubtype(
             if (context) context.error(error);
             return error;
         }
+    } else {
+        if (t.kind === expected.kind) return null;
+        if (context) context.error(error);
+        return error;
     }
-
-    throw new Error(`${expected.name} is not a valid output type.`);
 }
 
 module.exports = {

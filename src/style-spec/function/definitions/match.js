@@ -103,7 +103,7 @@ class Match implements Expression {
             var o = [${outputs.join(', ')}];
             var l = ${JSON.stringify(lookup)};
             var i = ${input};
-            return o[l[this.as(i, "${this.inputType.name}")] || 0]();
+            return o[l[this.as(i, ${JSON.stringify(this.inputType)})] || 0]();
         }.bind(this))()`;
     }
 

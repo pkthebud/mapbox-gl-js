@@ -84,7 +84,7 @@ CompoundExpression.register(expressions, {
         ]
     },
     'properties': [ObjectType, [], () =>
-        'this.as(props, "Object", "feature.properties")'
+        'this.as(props, {kind: "Object"}, "feature.properties")'
     ],
     'geometry_type': [ StringType, [], () =>
         'this.get(this.get(feature, "geometry", "feature"), "type", "feature.geometry")'
@@ -129,7 +129,7 @@ CompoundExpression.register(expressions, {
 
 function defineAssertion(type: Type) {
     return [ type, [ValueType],  (args) =>
-        `this.as(${args[0]}, ${JSON.stringify(type.name)})`
+        `this.as(${args[0]}, ${JSON.stringify(type)})`
     ];
 }
 

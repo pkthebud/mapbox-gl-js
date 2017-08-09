@@ -1,5 +1,5 @@
 {
-  "expectExpressionType": "Array<String>",
+  "expectExpressionType": {"kind": "Array", "itemType": {"kind": "String"}},
   "expression": [
     "coalesce",
     ["literal", ["one"]],

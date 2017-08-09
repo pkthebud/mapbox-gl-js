@@ -1,56 +1,54 @@
 // @flow
 
-export type Type = PrimitiveType | ArrayType // eslint-disable-line no-use-before-define
+export type NullTypeT = { kind: 'Null' };
+export type NumberTypeT = { kind: 'Number' };
+export type StringTypeT = { kind: 'String' };
+export type BooleanTypeT = { kind: 'Boolean' };
+export type ColorTypeT = { kind: 'Color' };
+export type ObjectTypeT = { kind: 'Object' };
+export type ValueTypeT = { kind: 'Value' };
 
-export type PrimitiveType = { kind: 'primitive', name: string }
-export type ArrayType = { kind: 'array', name: string, itemType: Type, N: ?number }
+export type Type =
+    NullTypeT |
+    NumberTypeT |
+    StringTypeT |
+    BooleanTypeT |
+    ColorTypeT |
+    ObjectTypeT |
+    ValueTypeT |
+    ArrayType // eslint-disable-line no-use-before-define
 
-const NullType = primitive('Null');
-const NumberType = primitive('Number');
-const StringType = primitive('String');
-const BooleanType = primitive('Boolean');
-const ColorType = primitive('Color');
-const ObjectType = primitive('Object');
-const ValueType = primitive('Value');
-
-function primitive(name) : PrimitiveType {
-    return { kind: 'primitive', name };
+export type ArrayType = {
+    kind: 'Array',
+    itemType: Type,
+    N: ?number
 }
+
+const NullType = { kind: 'Null' };
+const NumberType = { kind: 'Number' };
+const StringType = { kind: 'String' };
+const BooleanType = { kind: 'Boolean' };
+const ColorType = { kind: 'Color' };
+const ObjectType = { kind: 'Object' };
+const ValueType = { kind: 'Value' };
 
 function array(itemType: Type, N: ?number) : ArrayType {
     return {
-        kind: 'array',
-        name: typeof N === 'number' ? `Array<${itemType.name}, ${N}>` : itemType === ValueType ? 'Array' : `Array<${itemType.name}>`,
+        kind: 'Array',
         itemType,
         N
     };
 }
 
-const types = {
-    'Null': NullType,
-    'String': StringType,
-    'Number': NumberType,
-    'Boolean': BooleanType,
-    'Object': ObjectType,
-    'Color': ColorType,
-    'Value': ValueType
-};
-
-const arrayPattern = /^Array(<([^,>]+)(\s*,\s*([0-9])+)?>)?$/;
-function parseType (type: string): Type | null {
-    if (types[type]) {
-        return types[type];
+function toString(type: Type): string {
+    if (type.kind === 'Array') {
+        const itemType = toString(type.itemType);
+        return typeof type.N === 'number' ?
+            `Array<${itemType}, ${type.N}>` :
+            type.itemType.kind === 'Value' ? 'Array' : `Array<${itemType}>`;
+    } else {
+        return type.kind;
     }
-
-    const match = arrayPattern.exec(type);
-    // Consider caching this so we don't reparse "Array<...>" repeatedly.
-    if (match) {
-        const itemType = parseType(match[2] || 'Value');
-        if (!itemType) return null;
-        const N = match[4] ? parseInt(match[4], 10) : undefined;
-        return array(itemType, N);
-    }
-    return null;
 }
 
 module.exports = {
@@ -62,5 +60,5 @@ module.exports = {
     ObjectType,
     ValueType,
     array,
-    parseType
+    toString
 };
