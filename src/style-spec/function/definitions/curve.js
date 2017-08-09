@@ -103,7 +103,7 @@ class Curve implements Expression {
         if (interpolation.name !== 'step' &&
             outputType.kind !== 'Number' &&
             outputType.kind !== 'Color' &&
-            !(outputType.kind === 'Array' && outputType.itemType.kind !== 'Number')) {
+            !(outputType.kind === 'Array' && outputType.itemType.kind === 'Number')) {
             return context.error(`Type ${toString(outputType)} is not interpolatable, and thus cannot be used as a ${interpolation.name} curve's output type.`, 1);
         }
 
