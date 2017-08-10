@@ -104,7 +104,7 @@ class Curve implements Expression {
             outputType.kind !== 'Number' &&
             outputType.kind !== 'Color' &&
             !(outputType.kind === 'Array' && outputType.itemType.kind === 'Number')) {
-            return context.error(`Type ${toString(outputType)} is not interpolatable, and thus cannot be used as a ${interpolation.name} curve's output type.`, 1);
+            return context.error(`Type ${toString(outputType)} is not interpolatable, and thus cannot be used as a ${interpolation.name} curve's output type.`);
         }
 
         return new Curve(context.key, outputType, interpolation, input, stops);

@@ -220,7 +220,6 @@ function checkSubtype(
         if (t.kind === 'Array') {
             const itemError = checkSubtype(expected.itemType, t.itemType);
             if (itemError) {
-                error = `${error} (${itemError})`;
                 if (context) context.error(error);
                 return error;
             } else if (typeof expected.N === 'number' && expected.N !== t.N) {
