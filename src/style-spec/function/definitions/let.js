@@ -82,7 +82,7 @@ class Let implements Expression {
         return new Let(context.key, bindings, result);
     }
 
-    static escape(name: string) :string {
+    static escape(name: string): string {
         return `_${name.replace(/[^a-zA-Z_a-zA-Z_0-9]/g, '_')}`;
     }
 }

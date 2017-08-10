@@ -70,7 +70,7 @@ class Curve implements Expression {
 
             interpolation = {
                 name: 'cubic-bezier',
-                controlPoints: (controlPoints : any)
+                controlPoints: (controlPoints: any)
             };
         } else {
             return context.error(`Unknown interpolation type ${String(interpolation[0])}`, 1, 0);
