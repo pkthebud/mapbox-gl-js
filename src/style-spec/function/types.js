@@ -7,6 +7,7 @@ export type BooleanTypeT = { kind: 'Boolean' };
 export type ColorTypeT = { kind: 'Color' };
 export type ObjectTypeT = { kind: 'Object' };
 export type ValueTypeT = { kind: 'Value' };
+export type ErrorTypeT = { kind: 'Error' };
 
 export type Type =
     NullTypeT |
@@ -16,7 +17,8 @@ export type Type =
     ColorTypeT |
     ObjectTypeT |
     ValueTypeT |
-    ArrayType // eslint-disable-line no-use-before-define
+    ArrayType | // eslint-disable-line no-use-before-define
+    ErrorTypeT
 
 export type ArrayType = {
     kind: 'Array',
@@ -31,6 +33,7 @@ const BooleanType = { kind: 'Boolean' };
 const ColorType = { kind: 'Color' };
 const ObjectType = { kind: 'Object' };
 const ValueType = { kind: 'Value' };
+const ErrorType = { kind: 'Error' };
 
 function array(itemType: Type, N: ?number): ArrayType {
     return {
@@ -60,5 +63,6 @@ module.exports = {
     ObjectType,
     ValueType,
     array,
+    ErrorType,
     toString
 };

@@ -10,7 +10,8 @@ const {
     ColorType,
     ObjectType,
     ValueType,
-    array
+    array,
+    ErrorType
 } = require('../types');
 
 const { CompoundExpression, varargs } = require('../compound_expression');
@@ -41,6 +42,7 @@ const expressions: { [string]: Class<Expression> } = {
 };
 
 CompoundExpression.register(expressions, {
+    'error': [ ErrorType, [ StringType ], fromContext('error') ],
     'ln2': [ NumberType, [], () => 'Math.LN2'],
     'pi': [ NumberType, [], () => 'Math.PI'],
     'e': [ NumberType, [], () => 'Math.E'],

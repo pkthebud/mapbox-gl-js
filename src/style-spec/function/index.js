@@ -53,13 +53,14 @@ type StylePropertySpecification = {
 
 function createFunction(parameters: FunctionSpecification, propertySpec: StylePropertySpecification) {
     let expr;
+
     if (!isFunctionDefinition(parameters)) {
         expr = convert.value(parameters, propertySpec);
+        if (expr === null) {
+            expr = getDefaultValue(propertySpec);
+        }
     } else if (parameters.expression) {
-        const defaultValue = (typeof propertySpec.default !== 'undefined') ?
-            convert.value(propertySpec.default, propertySpec) :
-            null;
-        expr = ['coalesce', parameters.expression, defaultValue];
+        expr = ['coalesce', parameters.expression, getDefaultValue(propertySpec)];
     } else {
         expr = convert.function(parameters, propertySpec);
     }
@@ -67,9 +68,18 @@ function createFunction(parameters: FunctionSpecification, propertySpec: StylePr
     const expectedType = getExpectedType(propertySpec);
     const compiled = compileExpression(expr, expectedType);
     if (compiled.result === 'success') {
+        const warningHistory: {[key: string]: boolean} = {};
         const f: StyleFunction = function (zoom, properties) {
-            const val = compiled.function({zoom}, {properties});
-            return val === null ? undefined : val;
+            try {
+                const val = compiled.function({zoom}, {properties});
+                return val === null ? undefined : val;
+            } catch (e) {
+                if (!warningHistory[e.message]) {
+                    warningHistory[e.message] = true;
+                    if (typeof console !== 'undefined') console.warn(e.message);
+                }
+                return undefined;
+            }
         };
         f.isFeatureConstant = compiled.isFeatureConstant;
         f.isZoomConstant = compiled.isZoomConstant;
@@ -161,6 +171,12 @@ function findZoomCurve(expression: Expression): null | Curve | {key: string, err
 function isFunctionDefinition(value): boolean {
     return typeof value === 'object' &&
         Boolean(value.expression || value.stops || value.type === 'identity');
+}
+
+function getDefaultValue(propertySpec) {
+    return (typeof propertySpec.default !== 'undefined') ?
+        convert.value(propertySpec.default, propertySpec) :
+        ['error', 'No default property value available'];
 }
 
 function getExpectedType(spec) {
