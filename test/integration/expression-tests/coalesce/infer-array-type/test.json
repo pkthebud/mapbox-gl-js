@@ -9,11 +9,13 @@
   "inputs": [],
   "expected": {
     "compiled": {
-      "result": "success",
-      "isFeatureConstant": true,
-      "isZoomConstant": true,
-      "type": "Array<String>"
-    },
-    "outputs": []
+      "result": "error",
+      "errors": [
+        {
+          "key": "[3]",
+          "error": "Expected Array<String> but found Null instead."
+        }
+      ]
+    }
   }
 }
