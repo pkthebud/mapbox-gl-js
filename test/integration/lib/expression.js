@@ -6,7 +6,8 @@ const diff = require('diff');
 const fs = require('fs');
 const stringify = require('json-stringify-pretty-compact');
 
-const linter = require('eslint').linter;
+const Linter = require('eslint').Linter;
+const linter = new Linter();
 
 const floatPrecision = 6; // in decimal sigfigs
 
@@ -68,11 +69,22 @@ exports.run = function (implementation, options, runExpressionTest) {
             if (result.compiled.functionSource) {
                 params.compiledJs = result.compiled.functionSource;
                 delete result.compiled.functionSource;
-                const lint = linter.verify(params.compiledJs, {
+                let lint = linter.verify(params.compiledJs, {
                     parserOptions: { ecmaVersion: 5 }
-                }).filter(message => message.fatal);
-                if (lint.length > 0) {
+                }, {filename: dir});
+                if (lint.filter(message => message.fatal).length > 0) {
                     result.compiled.lintErrors = lint;
+                } else {
+                    const code = params.compiledJs.replace(/\{/g, '{\n');
+                    lint = linter.verifyAndFix(code, {
+                        parserOptions: { ecmaVersion: 5 },
+                        rules: {
+                            indent: ['error', 2]
+                        }
+                    }, {filename: dir});
+                    if (lint.fixed) {
+                        params.compiledJs = lint.output;
+                    }
                 }
             }
 
