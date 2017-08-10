@@ -32,7 +32,7 @@ const ColorType = { kind: 'Color' };
 const ObjectType = { kind: 'Object' };
 const ValueType = { kind: 'Value' };
 
-function array(itemType: Type, N: ?number) : ArrayType {
+function array(itemType: Type, N: ?number): ArrayType {
     return {
         kind: 'Array',
         itemType,

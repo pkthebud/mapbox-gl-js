@@ -1,3 +1,4 @@
+// @flow
 // This would ideally be in expressions.js, but pulled into separate file
 // to avoid circular imports, due to https://github.com/facebook/flow/issues/3249
 export type ExpressionName =
@@ -63,6 +64,6 @@ export type ExpressionName =
     "typeof" |
     "upcase" |
     "zoom" |
-    "||"
+    "||";
 
 module.exports = {};

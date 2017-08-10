@@ -24,7 +24,7 @@ class Literal implements Expression {
         if (!isValue(args[1]))
             context.error(`invalid value`);
 
-        const value = (args[1] : any);
+        const value = (args[1]: any);
         let type = typeOf(value);
 
         // special case: infer the item type if possible for zero-length arrays

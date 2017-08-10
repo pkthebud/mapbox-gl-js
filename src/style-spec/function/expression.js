@@ -142,7 +142,7 @@ class ParsingContext {
  *
  * @private
  */
-function parseExpression(expr: mixed, context: ParsingContext) : ?Expression {
+function parseExpression(expr: mixed, context: ParsingContext): ?Expression {
     if (expr === null || typeof expr === 'string' || typeof expr === 'boolean' || typeof expr === 'number') {
         expr = ['literal', expr];
     }
