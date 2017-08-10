@@ -125,32 +125,38 @@ function convertZoomAndPropertyFunction(parameters, propertySpec) {
 function convertPropertyFunction(parameters, propertySpec) {
     const type = getFunctionType(parameters, propertySpec);
 
+    const inputType = typeof parameters.stops[0][0];
+    assert(
+        inputType === 'string' ||
+        inputType === 'number' ||
+        inputType === 'boolean'
+    );
+
+    let input = [inputType, ['get', parameters.property]];
+
     let expression;
-    if (type === 'categorical') {
-        expression = ['match'];
+    if (type === 'categorical' && inputType === 'boolean') {
+        assert(parameters.stops.length > 0 && parameters.stops.length <= 2);
+        if (parameters.stops[0][0] === false) {
+            input = ['!', input];
+        }
+        expression = [ 'case', input, parameters.stops[0][1] ];
+        if (parameters.stops.length > 1) {
+            expression.push(parameters.stops[1][1]);
+        } else {
+            expression.push(parameters.default);
+        }
+        return expression;
+    } else if (type === 'categorical') {
+        expression = ['match', input];
     } else if (type === 'interval') {
-        expression = ['curve', ['step']];
+        expression = ['curve', ['step'], input];
     } else if (type === 'exponential') {
         const base = parameters.base !== undefined ? parameters.base : 1;
-        expression = ['curve', ['exponential', base]];
+        expression = ['curve', ['exponential', base], input];
     } else {
         throw new Error(`Unknown property function type ${type}`);
     }
-
-    const firstStopType = typeof parameters.stops[0][0];
-    assert(
-        firstStopType === 'string' ||
-        firstStopType === 'number' ||
-        firstStopType === 'boolean'
-    );
-
-    const expectedTypeName = firstStopType.slice(0, 1).toUpperCase() + firstStopType.slice(1);
-    const checkType = ['==', expectedTypeName, ['typeof', ['get', parameters.property]]];
-    expression.push([
-        'case',
-        checkType, [firstStopType, ['get', parameters.property]],
-        null
-    ]);
 
     for (const stop of parameters.stops) {
         expression.push(stop[0]);
