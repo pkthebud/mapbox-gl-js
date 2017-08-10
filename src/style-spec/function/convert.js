@@ -12,6 +12,9 @@ function convertFunction(parameters, propertySpec) {
         parameters.default = convertValue(parameters.default, propertySpec);
     } else {
         parameters.default = convertValue(propertySpec.default, propertySpec);
+        if (parameters.default === null) {
+            parameters.default = ['error', 'No default property value available.'];
+        }
     }
 
     if (parameters.stops) {
@@ -50,24 +53,29 @@ function annotateValue(value, spec) {
     } else if (spec.type === 'array') {
         return ['array', spec.value, value];
     } else if (spec.type === 'enum') {
+        const values = {};
+        for (const v in spec.values) {
+            values[v] = true;
+        }
         return [
             'let',
             'property_value',
             ['string', value],
             'enum_values',
-            ['literal', spec.values],
+            ['literal', values],
             [
                 'case',
                 ['has', ['var', 'property_value'], ['var', 'enum_values']],
                 ['var', 'property_value'],
-                null
+                [
+                    'error',
+                    `Expected value to be one of ${Object.keys(values).join(', ')}.`
+
+                ]
             ]
         ];
     } else {
         return [spec.type, value];
-        //const expectedTypeName = spec.type.slice(0, 1).toUpperCase() + spec.type.slice(1);
-        //const checkType = ['==', expectedTypeName, ['typeof', value]];
-        //return ['case', checkType, [spec.type, value], null];
     }
 }
 

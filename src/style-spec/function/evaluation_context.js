@@ -64,8 +64,7 @@ module.exports = () => ({
         assert(expectedType.kind, `Invalid type ${JSON.stringify(expectedType)}`);
 
         const type = typeOf(value);
-        const typeError = (value === null && expectedType.name !== 'Null') ||
-            checkSubtype(expectedType, type);
+        const typeError = checkSubtype(expectedType, type);
         ensure(!typeError, `Expected ${name || 'value'} to be of type ${toString(expectedType)}, but found ${toString(type)} instead.`);
         return value;
     },

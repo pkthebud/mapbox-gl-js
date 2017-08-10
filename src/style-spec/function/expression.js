@@ -4,6 +4,7 @@ import type {
     Type,
 } from './types';
 const {
+    NullType,
     NumberType,
     StringType,
     BooleanType,
@@ -192,14 +193,17 @@ function checkSubtype(
     t: Type,
     context?: ParsingContext
 ): ?string {
-    let error = `Expected ${toString(expected)} but found ${toString(t)} instead.`;
+    const error = `Expected ${toString(expected)} but found ${toString(t)} instead.`;
 
-    // a `null` literal is allowed anywhere.
-    if (t.kind === 'Null') return null;
+    // Error is a subtype of every type
+    if (t.kind === 'Error') {
+        return null;
+    }
 
     if (expected.kind === 'Value') {
         if (t.kind === 'Value') return null;
         const members = [
+            NullType,
             NumberType,
             StringType,
             BooleanType,
