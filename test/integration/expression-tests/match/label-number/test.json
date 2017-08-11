@@ -4,6 +4,7 @@
   "inputs": [
     [{}, {"properties": {"x": 0}}],
     [{}, {"properties": {"x": 1}}],
+    [{}, {"properties": {"x": 0.5}}],
     [{}, {"properties": {"x": "0"}}],
     [{}, {"properties": {"x": false}}],
     [{}, {"properties": {"x": null}}],
@@ -18,6 +19,7 @@
     },
     "outputs": [
       "match",
+      "otherwise",
       "otherwise",
       {
         "error": "Expected value to be of type Number, but found String instead."
