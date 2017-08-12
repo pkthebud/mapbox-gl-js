@@ -1,13 +1,19 @@
 'use strict';
 
+const assert = require('assert');
 const path = require('path');
 const harness = require('./harness');
 const diff = require('diff');
 const fs = require('fs');
 const stringify = require('json-stringify-pretty-compact');
 
-const Linter = require('eslint').Linter;
-const linter = new Linter();
+let linter;
+try {
+    const Linter = require('eslint').Linter;
+    linter = new Linter();
+} catch (_) {
+    // eslint-disable-line
+}
 
 const floatPrecision = 6; // in decimal sigfigs
 
@@ -67,6 +73,7 @@ exports.run = function (implementation, options, runExpressionTest) {
             const expected = fixture.expected;
 
             if (result.compiled.functionSource) {
+                assert(linter);
                 params.compiledJs = result.compiled.functionSource;
                 delete result.compiled.functionSource;
                 let lint = linter.verify(params.compiledJs, {
