@@ -1,7 +1,6 @@
 'use strict';
 
 require('flow-remove-types/register');
-const util = require('../src/util/util');
 const expressionSuite = require('./integration').expression;
 const compileExpression = require('../src/style-spec/function/compile');
 const { toString } = require('../src/style-spec/function/types');
@@ -20,8 +19,19 @@ expressionSuite.run('js', {tests: tests}, (fixture) => {
     const compiled = compileExpression(fixture.expression, type);
 
     const result = {
-        compiled: util.pick(compiled, ['result', 'functionSource', 'isFeatureConstant', 'isZoomConstant', 'errors'])
+        compiled: {}
     };
+    [
+        'result',
+        'functionSource',
+        'isFeatureConstant',
+        'isZoomConstant',
+        'errors'
+    ].forEach(key => {
+        if (compiled.hasOwnProperty(key)) {
+            result.compiled[key] = compiled[key];
+        }
+    });
     if (compiled.result === 'success') {
         result.compiled.type = toString(compiled.expression.type);
 
