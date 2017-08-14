@@ -90,6 +90,11 @@ class Curve implements Expression {
                 return context.error('Input/output pairs for "curve" expressions must be defined using literal numeric values (not computed expressions) for the input values.', i + 3);
             }
 
+
+            if (Math.abs(label) > Number.MAX_SAFE_INTEGER) {
+                return context.error(`Numeric values must be no larger than ${Number.MAX_SAFE_INTEGER}.`, i + 3);
+            }
+
             if (stops.length && stops[stops.length - 1][0] > label) {
                 return context.error('Input/output pairs for "curve" expressions must be arranged with input values in strictly ascending order.', i + 3);
             }
