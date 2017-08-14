@@ -21,8 +21,12 @@ class Literal implements Expression {
         if (args.length !== 2)
             return context.error(`'literal' expression requires exactly one argument, but found ${args.length - 1} instead.`);
 
+        if (hasInvalidNumber(args[1], context)) {
+            return null;
+        }
+
         if (!isValue(args[1]))
-            context.error(`invalid value`);
+            return context.error(`invalid value`);
 
         const value = (args[1]: any);
         let type = typeOf(value);
@@ -63,5 +67,23 @@ class Literal implements Expression {
 
     accept(visitor: Visitor<Expression>) { visitor.visit(this); }
 }
+
+function hasInvalidNumber (value: mixed, context: ParsingContext) {
+    if (typeof value === 'number' && Math.abs(value) > Number.MAX_SAFE_INTEGER) {
+        context.error(`Numeric values must be no larger than ${Number.MAX_SAFE_INTEGER}.`);
+        return true;
+    } else if (Array.isArray(value)) {
+        return value.some(item => hasInvalidNumber(item, context));
+    } else if (value && typeof value === 'object') {
+        for (const key in value) {
+            if (hasInvalidNumber(value[key], context)) {
+                return true;
+            }
+        }
+    }
+
+    return false;
+}
+
 
 module.exports = Literal;

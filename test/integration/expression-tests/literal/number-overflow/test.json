@@ -1,0 +1,16 @@
+{
+  "expectExpressionType": null,
+  "expression": 10000000000000000,
+  "inputs": [],
+  "expected": {
+    "compiled": {
+      "result": "error",
+      "errors": [
+        {
+          "key": "",
+          "error": "Numeric values must be no larger than 9007199254740991."
+        }
+      ]
+    }
+  }
+}
