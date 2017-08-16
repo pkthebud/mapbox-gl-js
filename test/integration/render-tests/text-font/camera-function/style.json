@@ -7,8 +7,8 @@
     }
   },
   "center": [
-    0,
-    0
+    90,
+    45
   ],
   "zoom": 1,
   "sources": {
@@ -19,13 +19,20 @@
         "properties": {},
         "geometry": {
           "type": "Point",
-          "coordinates": [0, 0]
+          "coordinates": [90, 45]
         }
       }
     }
   },
   "glyphs": "local://glyphs/{fontstack}/{range}.pbf",
   "layers": [
+    {
+      "id": "background",
+      "type": "background",
+      "paint": {
+        "background-color": "white"
+      }
+    },
     {
       "id": "symbol",
       "type": "symbol",
