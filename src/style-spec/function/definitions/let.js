@@ -56,23 +56,22 @@ class Let implements Expression {
     }
 
     static parse(args: Array<mixed>, context: ParsingContext) {
-        args = args.slice(1);
-        if (args.length < 3)
-            return context.error(`Expected at least 3 arguments, but found ${args.length} instead.`);
+        if (args.length < 4)
+            return context.error(`Expected at least 3 arguments, but found ${args.length - 1} instead.`);
 
         const bindings: Array<[string, Expression]> = [];
-        for (let i = 0; i < args.length - 1; i += 2) {
+        for (let i = 1; i < args.length - 1; i += 2) {
             const name = args[i];
             if (typeof name !== 'string')
-                return context.error(`Expected string, but found ${typeof name} instead`, i + 1);
+                return context.error(`Expected string, but found ${typeof name} instead.`, i);
 
-            const value = parseExpression(args[i + 1], context.concat(i + 2));
+            const value = parseExpression(args[i + 1], context.concat(i + 1));
             if (!value) return null;
 
             bindings.push([name, value]);
         }
 
-        const resultContext = context.concat(args.length, undefined, bindings);
+        const resultContext = context.concat(args.length - 1, undefined, bindings);
         const result = parseExpression(args[args.length - 1], resultContext);
         if (!result) return null;
 
