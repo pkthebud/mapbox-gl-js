@@ -66,9 +66,6 @@ class Let implements Expression {
             if (typeof name !== 'string')
                 return context.error(`Expected string, but found ${typeof name} instead`, i + 1);
 
-            if (context.definitions[name])
-                return context.error(`"${name}" is reserved, so it cannot not be used as a "let" binding.`, i + 1);
-
             const value = parseExpression(args[i + 1], context.concat(i + 2));
             if (!value) return null;
 
