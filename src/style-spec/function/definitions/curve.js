@@ -65,7 +65,7 @@ class Curve implements Expression {
                 controlPoints.length !== 4 ||
                 controlPoints.some(t => typeof t !== 'number' || t < 0 || t > 1)
             ) {
-                return context.error('cubic bezier interpolation requires four numeric arguments with values between 0 and 1.', 1);
+                return context.error('Cubic bezier interpolation requires four numeric arguments with values between 0 and 1.', 1);
             }
 
             interpolation = {
