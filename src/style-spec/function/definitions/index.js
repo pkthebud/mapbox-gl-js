@@ -162,14 +162,17 @@ function defineComparisonOp(name) {
     const op = name === '==' ? '===' :
         name === '!=' ? '!==' : name;
     const compile = ([lhs, rhs]) => `${lhs} ${op} ${rhs}`;
+    const overloads = [
+        [[NumberType, NumberType], compile],
+        [[StringType, StringType], compile]
+    ];
+    if (name === '==' || name === '!=') {
+        overloads.push([[BooleanType, BooleanType], compile]);
+        overloads.push([[NullType, NullType], compile]);
+    }
     return {
         type: BooleanType,
-        overloads: [
-            [[NumberType, NumberType], compile],
-            [[BooleanType, BooleanType], compile],
-            [[StringType, StringType], compile],
-            [[NullType, NullType], compile],
-        ]
+        overloads
     };
 }
 
