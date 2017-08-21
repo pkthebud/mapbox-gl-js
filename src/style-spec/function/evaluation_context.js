@@ -1,10 +1,10 @@
 // @flow
 
 const assert = require('assert');
+const UnitBezier = require('@mapbox/unitbezier');
 const parseColor = require('../util/parse_color');
 const interpolate = require('../util/interpolate');
 const interpolationFactor = require('./interpolation_factor');
-const bezier = require('bezier-easing');
 const {toString, NumberType, ObjectType} = require('./types');
 const {Color, typeOf, isValue} = require('./values');
 const {checkSubtype} = require('./expression');
@@ -117,7 +117,7 @@ module.exports = () => ({
         return maybeWrapped;
     },
 
-    _bezierInterpolators: ({}: {[string]: (number) => number}),
+    _bezierInterpolators: ({}: {[string]: UnitBezier}),
     _bezierInterpolation(
         input: number,
         controlPoints: [number, number, number, number],
@@ -125,12 +125,12 @@ module.exports = () => ({
         upper: number
     ) {
         const key = controlPoints.join(',');
-        let easing = this._bezierInterpolators[key];
-        if (!easing) {
-            easing = this._bezierInterpolators[key] = bezier(...controlPoints);
+        let ub = this._bezierInterpolators[key];
+        if (!ub) {
+            ub = this._bezierInterpolators[key] = new UnitBezier(...controlPoints);
         }
         const t = interpolationFactor(input, 1, lower, upper);
-        return easing(t);
+        return ub.solve(t);
     },
 
     evaluateCurve(input: number, stopInputs: Array<number>, stopOutputs: Array<Function>, interpolation: InterpolationType, resultType: string) {
