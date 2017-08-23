@@ -215,6 +215,11 @@ class StyleLayer extends Evented {
         return transition.declaration.interpolationFactor(input, lower, upper);
     }
 
+    getLayoutInterpolationFactor(name: string, input: number, lower: number, upper: number) {
+        const declaration = this._layoutDeclarations[name];
+        return declaration.interpolationFactor(input, lower, upper);
+    }
+
     isPaintValueFeatureConstant(name: string) {
         const transition = this._paintTransitions[name];
 
