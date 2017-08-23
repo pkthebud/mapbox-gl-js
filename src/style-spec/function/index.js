@@ -1,6 +1,5 @@
 // @flow
 
-const assert = require('assert');
 const compileExpression = require('./compile');
 const convert = require('./convert');
 const {
@@ -87,33 +86,10 @@ function createFunction(parameters: FunctionSpecification, propertySpec: StylePr
             // capture metadata from the curve definition that's needed for
             // our prepopulate-and-interpolate approach to paint properties
             // that are zoom-and-property dependent.
-            const curve = findZoomCurve(compiled.expression);
-            if (!(curve instanceof Curve)) {
+            f.zoomCurve = findZoomCurve(compiled.expression);
+            if (!(f.zoomCurve instanceof Curve)) {
                 // should be prevented by validation.
-                throw new Error(curve ? curve.error : 'Invalid zoom expression');
-            }
-
-            const interpolation = curve.serialize()[1];
-
-            f.zoomStops = [];
-            for (const stop of curve.stops) {
-                f.zoomStops.push(stop[0]);
-            }
-
-            if (!f.isFeatureConstant) {
-                const interpExpression = ['curve', interpolation, ['zoom']];
-                for (let i = 0; i < f.zoomStops.length; i++) {
-                    interpExpression.push(f.zoomStops[i], i);
-                }
-                const interpFunction = compileExpression(
-                    ['coalesce', interpExpression, 0],
-                    NumberType
-                );
-
-                if (interpFunction.result === 'success') {
-                    f.interpolationT = interpFunction.function;
-                }
-                assert(f.interpolationT);
+                throw new Error(f.zoomCurve ? f.zoomCurve.error : 'Invalid zoom expression');
             }
         }
         return f;

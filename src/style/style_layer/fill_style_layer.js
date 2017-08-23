@@ -46,11 +46,11 @@ class FillStyleLayer extends StyleLayer {
         }
     }
 
-    getPaintInterpolationT(name: string, globalProperties: GlobalProperties) {
+    getPaintInterpolationFactor(name: string, ...args: *) {
         if (name === 'fill-outline-color' && this.getPaintProperty('fill-outline-color') === undefined) {
-            return super.getPaintInterpolationT('fill-color', globalProperties);
+            return super.getPaintInterpolationFactor('fill-color', ...args);
         } else {
-            return super.getPaintInterpolationT(name, globalProperties);
+            return super.getPaintInterpolationFactor(name, ...args);
         }
     }
 

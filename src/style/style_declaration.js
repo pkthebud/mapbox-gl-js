@@ -2,6 +2,7 @@
 
 const createFunction = require('../style-spec/function');
 const util = require('../util/util');
+const Curve = require('../style-spec/function/definitions/curve');
 
 import type {StyleFunction} from '../style-spec/function';
 
@@ -18,7 +19,7 @@ class StyleDeclaration {
     minimum: number;
     function: StyleFunction;
     stopZoomLevels: Array<number>;
-    _functionInterpolationT: StyleFunction;
+    _zoomCurve: ?Curve;
 
     constructor(reference: any, value: any) {
         this.value = util.clone(value);
@@ -33,7 +34,11 @@ class StyleDeclaration {
         this.isZoomConstant = this.function.isZoomConstant;
 
         if (!this.isZoomConstant) {
-            this.stopZoomLevels = [].concat(this.function.zoomStops);
+            this._zoomCurve = this.function.zoomCurve;
+            this.stopZoomLevels = [];
+            for (const stop of this.function.zoomCurve.stops) {
+                this.stopZoomLevels.push(stop[0]);
+            }
         }
     }
 
@@ -46,17 +51,20 @@ class StyleDeclaration {
     }
 
     /**
-     * Given a zoom level, calculate a possibly-fractional "index" into the
-     * composite function stops array, intended to be used for interpolating
-     * between paint values that have been evaluated at the surrounding stop
-     * values.
+     * Calculate the interpolation factor for the given zoom stops and current
+     * zoom level.
      *
      * Only valid for composite functions.
      * @private
      */
-    calculateInterpolationT(globalProperties: {zoom: number}) {
-        if (this.isFeatureConstant || this.isZoomConstant) return 0;
-        return this.function.interpolationT(globalProperties);
+    interpolationFactor(zoom: number, lower: number, upper: number) {
+        if (!this._zoomCurve) return 0;
+        return Curve.interpolationFactor(
+            this._zoomCurve.interpolation,
+            zoom,
+            lower,
+            upper
+        );
     }
 }
 

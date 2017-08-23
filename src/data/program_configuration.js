@@ -1,7 +1,6 @@
 // @flow
 
 const createVertexArrayType = require('./vertex_array_type');
-const interpolationFactor = require('../style-spec/function/interpolation_factor');
 const packUint8ToFloat = require('../shaders/encode_attribute').packUint8ToFloat;
 const VertexBuffer = require('../gl/vertex_buffer');
 
@@ -184,7 +183,7 @@ class CompositeFunctionBinder implements Binder {
     }
 
     setUniforms(gl: WebGLRenderingContext, program: Program, layer: StyleLayer, {zoom}: { zoom: number }) {
-        const f = interpolationFactor(this.useIntegerZoom ? Math.floor(zoom) : zoom, 1, this.zoom, this.zoom + 1);
+        const f = layer.getPaintInterpolationFactor(this.property, this.useIntegerZoom ? Math.floor(zoom) : zoom, this.zoom, this.zoom + 1);
         gl.uniform1f(program.uniforms[`a_${this.name}_t`], f);
     }
 }
