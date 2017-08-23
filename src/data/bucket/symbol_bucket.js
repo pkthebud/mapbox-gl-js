@@ -37,6 +37,7 @@ import type {
 import type StyleLayer from '../../style/style_layer';
 import type {Shaping, PositionedIcon} from '../../symbol/shaping';
 import type {SymbolQuad} from '../../symbol/quads';
+import type {SizeData} from '../../symbol/symbol_size';
 
 type SymbolBucketParameters = BucketParameters & {
     sdfIcons: boolean,
@@ -787,7 +788,7 @@ class SymbolBucket implements Bucket {
                 if (glyphScale <= maxScale) {
                     const textSizeData = getSizeVertexData(layer,
                         this.zoom,
-                        this.textSizeData.coveringZoomRange,
+                        this.textSizeData,
                         'text-size',
                         symbolInstance.featureProperties);
                     this.addSymbols(
@@ -814,7 +815,7 @@ class SymbolBucket implements Bucket {
                     const iconSizeData = getSizeVertexData(
                         layer,
                         this.zoom,
-                        this.iconSizeData.coveringZoomRange,
+                        this.iconSizeData,
                         'icon-size',
                         symbolInstance.featureProperties);
                     this.addSymbols(
@@ -1083,69 +1084,64 @@ class SymbolBucket implements Bucket {
 
 // For {text,icon}-size, get the bucket-level data that will be needed by
 // the painter to set symbol-size-related uniforms
-function getSizeData(tileZoom, layer, sizeProperty) {
-    const sizeData = {};
+function getSizeData(tileZoom: number, layer: StyleLayer, sizeProperty: string): SizeData {
+    const isFeatureConstant = layer.isLayoutValueFeatureConstant(sizeProperty);
+    const isZoomConstant = layer.isLayoutValueZoomConstant(sizeProperty);
 
-    sizeData.isFeatureConstant = layer.isLayoutValueFeatureConstant(sizeProperty);
-    sizeData.isZoomConstant = layer.isLayoutValueZoomConstant(sizeProperty);
+    if (isZoomConstant && !isFeatureConstant) {
+        return { functionType: 'source' };
+    }
 
-    if (sizeData.isFeatureConstant) {
-        sizeData.layoutSize = layer.getLayoutValue(sizeProperty, {zoom: tileZoom + 1});
+    if (isZoomConstant && isFeatureConstant) {
+        return {
+            functionType: 'constant',
+            layoutSize: layer.getLayoutValue(sizeProperty, {zoom: tileZoom + 1})
+        };
     }
 
     // calculate covering zoom stops for zoom-dependent values
-    if (!sizeData.isZoomConstant) {
-        const levels = layer.getLayoutValueStopZoomLevels(sizeProperty);
-        let lower = 0;
-        while (lower < levels.length && levels[lower] <= tileZoom) lower++;
-        lower = Math.max(0, lower - 1);
-        let upper = lower;
-        while (upper < levels.length && levels[upper] < tileZoom + 1) upper++;
-        upper = Math.min(levels.length - 1, upper);
+    const levels = layer.getLayoutValueStopZoomLevels(sizeProperty);
+    let lower = 0;
+    while (lower < levels.length && levels[lower] <= tileZoom) lower++;
+    lower = Math.max(0, lower - 1);
+    let upper = lower;
+    while (upper < levels.length && levels[upper] < tileZoom + 1) upper++;
+    upper = Math.min(levels.length - 1, upper);
 
-        sizeData.coveringZoomRange = [levels[lower], levels[upper]];
-        if (layer.isLayoutValueFeatureConstant(sizeProperty)) {
-            // for camera functions, also save off the function values
-            // evaluated at the covering zoom levels
-            sizeData.coveringStopValues = [
+    const coveringZoomRange: [number, number] = [levels[lower], levels[upper]];
+
+    if (!isFeatureConstant) {
+        return {
+            functionType: 'composite',
+            coveringZoomRange
+        };
+    } else {
+        // for camera functions, also save off the function values
+        // evaluated at the covering zoom levels
+        return {
+            functionType: 'camera',
+            layoutSize: layer.getLayoutValue(sizeProperty, {zoom: tileZoom + 1}),
+            coveringZoomRange,
+            coveringStopValues: [
                 layer.getLayoutValue(sizeProperty, {zoom: levels[lower]}),
                 layer.getLayoutValue(sizeProperty, {zoom: levels[upper]})
-            ];
-        }
-
-        // also store the function's base for use in calculating the
-        // interpolation factor each frame
-        sizeData.functionBase = layer.getLayoutProperty(sizeProperty).base;
-        if (typeof sizeData.functionBase === 'undefined') {
-            sizeData.functionBase = 1;
-        }
-        sizeData.functionType = layer.getLayoutProperty(sizeProperty).type ||
-            'exponential';
+            ]
+        };
     }
-
-    return sizeData;
 }
 
-function getSizeVertexData(layer, tileZoom, stopZoomLevels, sizeProperty, featureProperties) {
-    if (
-        layer.isLayoutValueZoomConstant(sizeProperty) &&
-        !layer.isLayoutValueFeatureConstant(sizeProperty)
-    ) {
-        // source function
+function getSizeVertexData(layer: StyleLayer, tileZoom: number, sizeData: SizeData, sizeProperty, featureProperties) {
+    if (sizeData.functionType === 'source') {
         return [
             10 * layer.getLayoutValue(sizeProperty, ({}: any), featureProperties)
         ];
-    } else if (
-        !layer.isLayoutValueZoomConstant(sizeProperty) &&
-        !layer.isLayoutValueFeatureConstant(sizeProperty)
-    ) {
-        // composite function
+    } else if (sizeData.functionType === 'composite') {
+        const zoomRange = sizeData.coveringZoomRange;
         return [
-            10 * layer.getLayoutValue(sizeProperty, {zoom: stopZoomLevels[0]}, featureProperties),
-            10 * layer.getLayoutValue(sizeProperty, {zoom: stopZoomLevels[1]}, featureProperties)
+            10 * layer.getLayoutValue(sizeProperty, {zoom: zoomRange[0]}, featureProperties),
+            10 * layer.getLayoutValue(sizeProperty, {zoom: zoomRange[1]}, featureProperties)
         ];
     }
-    // camera function or constant
     return null;
 }
 
