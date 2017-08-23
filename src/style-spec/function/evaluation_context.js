@@ -1,14 +1,14 @@
 // @flow
 
 const assert = require('assert');
-const UnitBezier = require('@mapbox/unitbezier');
 const parseColor = require('../util/parse_color');
 const interpolate = require('../util/interpolate');
-const interpolationFactor = require('./interpolation_factor');
 const {toString, NumberType, ObjectType} = require('./types');
 const {Color, typeOf, isValue} = require('./values');
 const {checkSubtype} = require('./expression');
+const Curve = require('./definitions/curve');
 
+import type UnitBezier from '@mapbox/unitbezier';
 import type { Type } from './types';
 import type { Value } from './values';
 import type { InterpolationType } from './definitions/curve';
@@ -117,22 +117,7 @@ module.exports = () => ({
         return maybeWrapped;
     },
 
-    _bezierInterpolators: ({}: {[string]: UnitBezier}),
-    _bezierInterpolation(
-        input: number,
-        controlPoints: [number, number, number, number],
-        lower: number,
-        upper: number
-    ) {
-        const key = controlPoints.join(',');
-        let ub = this._bezierInterpolators[key];
-        if (!ub) {
-            ub = this._bezierInterpolators[key] = new UnitBezier(...controlPoints);
-        }
-        const t = interpolationFactor(input, 1, lower, upper);
-        return ub.solve(t);
-    },
-
+    _unitBezierCache: ({}: {[string]: UnitBezier}),
     evaluateCurve(input: number, stopInputs: Array<number>, stopOutputs: Array<Function>, interpolation: InterpolationType, resultType: string) {
         input = this.as(input, NumberType, 'curve input');
 
@@ -147,16 +132,9 @@ module.exports = () => ({
             return stopOutputs[index]();
         }
 
-        let t = 0;
         const lower = stopInputs[index];
         const upper = stopInputs[index + 1];
-        if (interpolation.name === 'exponential') {
-            t = interpolationFactor(input, interpolation.base, lower, upper);
-        } else if (interpolation.name === 'linear') {
-            t = interpolationFactor(input, 1, lower, upper);
-        } else if (interpolation.name === 'cubic-bezier') {
-            t = this._bezierInterpolation(input, interpolation.controlPoints, lower, upper);
-        }
+        const t = Curve.interpolationFactor(interpolation, input, lower, upper);
 
         const outputLower = stopOutputs[index]();
         const outputUpper = stopOutputs[index + 1]();

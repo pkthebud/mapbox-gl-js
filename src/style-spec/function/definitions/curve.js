@@ -1,5 +1,8 @@
 // @flow
 
+const interpolationFactor = require('../interpolation_factor');
+
+const UnitBezier = require('@mapbox/unitbezier');
 const {
     toString,
     NumberType
@@ -31,6 +34,26 @@ class Curve implements Expression {
         this.interpolation = interpolation;
         this.input = input;
         this.stops = stops;
+    }
+
+    static interpolationFactor(interpolation: InterpolationType, input: number, lower: number, upper: number, unitBezierCache?: {[string]: UnitBezier}) {
+        let t = 0;
+        if (interpolation.name === 'exponential') {
+            t = interpolationFactor(input, interpolation.base, lower, upper);
+        } else if (interpolation.name === 'linear') {
+            t = interpolationFactor(input, 1, lower, upper);
+        } else if (interpolation.name === 'cubic-bezier') {
+            const key = interpolation.controlPoints.join(',');
+            let ub = unitBezierCache ? unitBezierCache[key] : null;
+            if (!ub) {
+                ub = new UnitBezier(...interpolation.controlPoints);
+                if (unitBezierCache) {
+                    unitBezierCache[key] = ub;
+                }
+            }
+            t = ub.solve(interpolationFactor(input, 1, lower, upper));
+        }
+        return t;
     }
 
     static parse(args: Array<mixed>, context: ParsingContext) {

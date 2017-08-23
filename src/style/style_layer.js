@@ -210,14 +210,9 @@ class StyleLayer extends Evented {
         }
     }
 
-    getPaintInterpolationT(name: string, globalProperties: any) {
+    getPaintInterpolationFactor(name: string, input: number, lower: number, upper: number) {
         const transition = this._paintTransitions[name];
-        return transition.declaration.calculateInterpolationT(globalProperties);
-    }
-
-    getLayoutInterpolationT(name: string, globalProperties: any) {
-        const declaration = this._layoutDeclarations[name];
-        return declaration.calculateInterpolationT(globalProperties);
+        return transition.declaration.interpolationFactor(input, lower, upper);
     }
 
     isPaintValueFeatureConstant(name: string) {
