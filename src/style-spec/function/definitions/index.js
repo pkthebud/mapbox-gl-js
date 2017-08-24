@@ -97,7 +97,13 @@ CompoundExpression.register(expressions, {
     'zoom': [ NumberType, [], () => 'mapProperties.zoom' ],
     '+': defineBinaryMathOp('+', true),
     '*': defineBinaryMathOp('*', true),
-    '-': defineBinaryMathOp('-'),
+    '-': {
+        type: NumberType,
+        overloads: [
+            [[NumberType, NumberType], ([a, b]) => `${a} - ${b}`],
+            [[NumberType], ([a]) => `-${a}`]
+        ]
+    },
     '/': defineBinaryMathOp('/'),
     '%': defineBinaryMathOp('%'),
     '^': [ NumberType, [NumberType, NumberType], ([base, exp]) =>
