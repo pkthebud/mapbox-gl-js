@@ -46,10 +46,6 @@ class Literal implements Expression {
         return new Literal(context.key, type, value);
     }
 
-    typecheck() {
-        return this;
-    }
-
     compile() {
         const value = JSON.stringify(this.value);
         return typeof this.value === 'object' ?  `(${value})` : value;
