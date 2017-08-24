@@ -62,8 +62,14 @@ class Let implements Expression {
         const bindings: Array<[string, Expression]> = [];
         for (let i = 1; i < args.length - 1; i += 2) {
             const name = args[i];
-            if (typeof name !== 'string')
+
+            if (typeof name !== 'string') {
                 return context.error(`Expected string, but found ${typeof name} instead.`, i);
+            }
+
+            if (/[^a-zA-Z0-9_]/.test(name)) {
+                return context.error(`Variable names must contain only alphanumeric characters or '_'.`, i);
+            }
 
             const value = parseExpression(args[i + 1], context.concat(i + 1));
             if (!value) return null;
@@ -78,8 +84,9 @@ class Let implements Expression {
         return new Let(context.key, bindings, result);
     }
 
+    // escape variable names to avoid conflict with reserved words / globals
     static escape(name: string): string {
-        return `_${name.replace(/[^a-zA-Z_a-zA-Z_0-9]/g, '_')}`;
+        return `_${name}`;
     }
 }
 
