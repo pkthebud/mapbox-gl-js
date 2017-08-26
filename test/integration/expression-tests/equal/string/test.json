@@ -2,8 +2,8 @@
   "expectExpressionType": null,
   "expression": [
     "==",
-    ["to_string", ["get", "x"]],
-    ["to_string", ["get", "y"]]
+    ["to-string", ["get", "x"]],
+    ["to-string", ["get", "y"]]
   ],
   "inputs": [
     [{}, {"properties": {"x": 1, "y": 1}}],
