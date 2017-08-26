@@ -1,6 +1,8 @@
 'use strict';
 
-const VectorTile = require('vector-tile').VectorTile;
+require('flow-remove-types/register');
+
+const VectorTile = require('@mapbox/vector-tile').VectorTile;
 const Pbf = require('pbf');
 const fs = require('fs');
 const createFilter = require('../../../src/style-spec').featureFilter;
@@ -31,7 +33,9 @@ for (const name in tile.layers) {
     });
 }
 
-console.time('create filters');
+const results = [['task', 'iteration', 'time']];
+
+let start = Date.now();
 for (let m = 0; m < 100; m++) {
     for (let i = 0; i < layers.length; i++) {
         const layer = layers[i];
@@ -40,10 +44,10 @@ for (let m = 0; m < 100; m++) {
             layer.filters.push(createFilter(layer.rawFilters[j]));
         }
     }
+    results.push(['create_filter', m, Date.now() - start]);
 }
-console.timeEnd('create filters');
 
-console.time('apply filters');
+start = Date.now();
 for (let m = 0; m < 100; m++) {
     for (let i = 0; i < layers.length; i++) {
         const layer = layers[i];
@@ -55,5 +59,8 @@ for (let m = 0; m < 100; m++) {
             }
         }
     }
+    results.push(['apply_filter', m, Date.now() - start]);
 }
-console.timeEnd('apply filters');
+
+console.log(results.map(row => row.join(',')).join('\n'));
+
