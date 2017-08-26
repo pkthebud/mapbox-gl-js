@@ -7,7 +7,7 @@
       "errors": [
         {
           "key": "[2]",
-          "error": "Numeric values must be no larger than 9007199254740991."
+          "error": "Branch labels must be integers no larger than 9007199254740991."
         }
       ]
     }
