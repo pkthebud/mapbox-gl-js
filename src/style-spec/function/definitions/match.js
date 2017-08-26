@@ -57,7 +57,7 @@ class Match implements Expression {
                 if (typeof label !== 'number' && typeof label !== 'string') {
                     return labelContext.error(`Branch labels must be numbers or strings.`);
                 } else if (typeof label === 'number' && Math.abs(label) > Number.MAX_SAFE_INTEGER) {
-                    return labelContext.error(`Numeric values must be no larger than ${Number.MAX_SAFE_INTEGER}.`);
+                    return labelContext.error(`Branch labels must be integers no larger than ${Number.MAX_SAFE_INTEGER}.`);
 
                 } else if (typeof label === 'number' && Math.floor(label) !== label) {
                     return labelContext.error(`Numeric branch labels must be integer values.`);
