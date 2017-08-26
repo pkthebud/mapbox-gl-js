@@ -100,7 +100,7 @@ function isFeatureConstant(e: Expression) {
                 } else {
                     result = result && !(
                         expression.name === 'properties' ||
-                        expression.name === 'geometry_type' ||
+                        expression.name === 'geometry-type' ||
                         expression.name === 'id'
                     );
                 }

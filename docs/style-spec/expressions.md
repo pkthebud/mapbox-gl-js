@@ -136,10 +136,10 @@ Assert that the argument is of a specific type, producing a runtime error if it 
 ### Type conversion:
 Convert the argument to the given type, producing a runtime error if the conversion is not possible.
 
-- `["to_string", e: Value] -> String`
-- `["to_number", e:Value] -> Number`
+- `["to-string", e: Value] -> String`
+- `["to-number", e:Value] -> Number`
   - Uses platform-default string-to-number conversion. (TBD: parse locale-specificformatted number strings)
-- `["to_boolean", e:Value] -> Boolean`
+- `["to-boolean", e:Value] -> Boolean`
   - `0`, `''`, and `null` are considered falsy.
 
 ### Lookup:
@@ -151,7 +151,7 @@ Convert the argument to the given type, producing a runtime error if the convers
 
 ### Feature data:
 - `["properties"] -> Object` the feature's `properties` object
-- `["geometry_type"] -> String` the string value of `feature.geometry.type`
+- `["geometry-type"] -> String` the string value of `feature.geometry.type`
 - `[ "id" ] -> Value` returns the value of `feature.id`.
 
 ### Decision:
@@ -174,7 +174,7 @@ Convert the argument to the given type, producing a runtime error if the convers
   * `["step"]` - equivalent to existing "interval" function behavior.
   * `["exponential", base]` - `base` is a number > 0; equivalent to existing "exponential" function behavior. `T` must be `Number` or `Color`
   * `["linear"]` - equivalent to `["exponential", 1]`
-  * `["cubic_bezier", x1, y1, x2, y2]` - define your own interpolation. `T` must be `Number` **(not yet implemented)**
+  * `["cubic-bezier", x1, y1, x2, y2]` - define your own interpolation. `T` must be `Number` **(not yet implemented)**
 
 ### Math:
 All of the following take `Number` inputs and produce a `Number`.

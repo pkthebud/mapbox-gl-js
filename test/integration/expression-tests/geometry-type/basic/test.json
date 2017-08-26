@@ -1,6 +1,6 @@
 {
   "expectExpressionType": null,
-  "expression": ["geometry_type"],
+  "expression": ["geometry-type"],
   "inputs": [
     [{}, {"geometry": {"type": "LineString", "coordinates": [[0, 0], [10, 0]]}}]
   ],

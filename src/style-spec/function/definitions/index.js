@@ -51,11 +51,11 @@ CompoundExpression.register(expressions, {
     'number': defineAssertion(NumberType),
     'boolean': defineAssertion(BooleanType),
     'object': defineAssertion(ObjectType),
-    'to_string': [ StringType, [ValueType], fromContext('toString') ],
-    'to_number': [ NumberType, [ValueType], fromContext('toNumber') ],
-    'to_boolean': [ BooleanType, [ValueType], ([v]) => `Boolean(${v})` ],
-    'to_rgba': [ array(NumberType, 4), [ColorType], ([v]) => `${v}.value` ],
-    'parse_color': [ ColorType, [StringType], fromContext('parseColor') ],
+    'to-string': [ StringType, [ValueType], fromContext('toString') ],
+    'to-number': [ NumberType, [ValueType], fromContext('toNumber') ],
+    'to-boolean': [ BooleanType, [ValueType], ([v]) => `Boolean(${v})` ],
+    'to-rgba': [ array(NumberType, 4), [ColorType], ([v]) => `${v}.value` ],
+    'parse-color': [ ColorType, [StringType], fromContext('parseColor') ],
     'rgb': [ ColorType, [NumberType, NumberType, NumberType],
         fromContext('rgba') ],
     'rgba': [ ColorType, [NumberType, NumberType, NumberType, NumberType],
@@ -88,7 +88,7 @@ CompoundExpression.register(expressions, {
     'properties': [ObjectType, [], () =>
         'this.as(props, {kind: "Object"}, "feature.properties")'
     ],
-    'geometry_type': [ StringType, [], () =>
+    'geometry-type': [ StringType, [], () =>
         'this.get(this.get(feature, "geometry", "feature"), "type", "feature.geometry")'
     ],
     'id': [ ValueType, [], () =>
