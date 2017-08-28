@@ -13,9 +13,10 @@ import type { Type } from './types';
 import type { Value } from './values';
 import type { InterpolationType } from './definitions/curve';
 
-class RuntimeError extends Error {
+class RuntimeError {
+    name: string;
+    message: string;
     constructor(message) {
-        super(message);
         this.name = 'ExpressionEvaluationError';
         this.message = message;
     }
