@@ -1,0 +1,28 @@
+{
+  "expectExpressionType": null,
+  "expression": [
+    "contains",
+    ["literal", [1, 2, 3, 4]],
+    ["number", ["get", "item"]]
+  ],
+  "inputs": [
+    [{}, {"properties": {"item": 3}}],
+    [{}, {"properties": {"item": 5}}],
+    [{}, {"properties": {"item": "3"}}]
+  ],
+  "expected": {
+    "compiled": {
+      "result": "success",
+      "isFeatureConstant": false,
+      "isZoomConstant": true,
+      "type": "Boolean"
+    },
+    "outputs": [
+      true,
+      false,
+      {
+        "error": "Expected value to be of type Number, but found String instead."
+      }
+    ]
+  }
+}

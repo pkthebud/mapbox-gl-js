@@ -54,6 +54,13 @@ module.exports = () => ({
         return this.as(obj, ObjectType, name).hasOwnProperty(key);
     },
 
+    contains: function (array: Array<Value>, value: Value) {
+        const type = typeOf(value).kind;
+        ensure(type !== 'Object' && type !== 'Array' && type !== 'Color',
+            `"contains" does not support values of type ${type}`);
+        return array.indexOf(value) >= 0;
+    },
+
     typeOf: function (x: Value): string {
         assert(isValue(x), `Invalid value ${String(x)}`);
         return toString(typeOf(x));

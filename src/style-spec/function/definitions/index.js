@@ -20,6 +20,7 @@ const Var = require('./var');
 const Literal = require('./literal');
 const ArrayAssertion = require('./array');
 const At = require('./at');
+const Contains = require('./contains');
 const Match = require('./match');
 const Case = require('./case');
 const Curve = require('./curve');
@@ -35,6 +36,7 @@ const expressions: { [string]: Class<Expression> } = {
     'literal': Literal,
     'array': ArrayAssertion,
     'at': At,
+    'contains': Contains,
     'case': Case,
     'match': Match,
     'coalesce': Coalesce,
