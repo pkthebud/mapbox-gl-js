@@ -147,7 +147,8 @@ Convert the argument to the given type, producing a runtime error if the convers
 - `["has", key: String, obj: Object = ["properties"] ] -> Boolean`
 - `["at", index: Number, arr: Array<T, N>|Array<T>] -> T`
 - `["typeof", expr: Value] -> String`
-- `["length", e: Vector<T>|String] -> Number`
+- `["length", e: Array<T>|String] -> Number`
+- `["contains", arr: Array<T, N>|Array<T>, value: T] -> Boolean`
 
 ### Feature data:
 - `["properties"] -> Object` the feature's `properties` object

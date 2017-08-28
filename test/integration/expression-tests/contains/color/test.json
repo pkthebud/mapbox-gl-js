@@ -1,0 +1,16 @@
+{
+  "expectExpressionType": null,
+  "expression": ["contains", ["array", ["get", "arr"]], ["parse-color", "red"]],
+  "inputs": [],
+  "expected": {
+    "compiled": {
+      "result": "error",
+      "errors": [
+        {
+          "key": "",
+          "error": "\"contains\" does not support values of type Color."
+        }
+      ]
+    }
+  }
+}
