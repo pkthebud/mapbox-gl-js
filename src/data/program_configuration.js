@@ -7,6 +7,7 @@ const VertexBuffer = require('../gl/vertex_buffer');
 import type StyleLayer from '../style/style_layer';
 import type {ViewType, StructArray, SerializedStructArray, StructArrayTypeParameters} from '../util/struct_array';
 import type Program from '../render/program';
+import type {Feature} from '../style-spec/function';
 
 type LayoutAttribute = {
     name: string,
@@ -47,7 +48,7 @@ interface Binder {
                        statistics: PaintPropertyStatistics,
                        start: number,
                        length: number,
-                       featureProperties: Object): void;
+                       feature: Feature): void;
 
     defines(): Array<string>;
 
@@ -106,8 +107,8 @@ class SourceFunctionBinder implements Binder {
                        statistics: PaintPropertyStatistics,
                        start: number,
                        length: number,
-                       featureProperties: Object) {
-        const value = layer.getPaintValue(this.property, undefined, featureProperties);
+                       feature: Feature) {
+        const value = layer.getPaintValue(this.property, undefined, feature);
 
         if (this.type === 'color') {
             const color = packColor(value);
@@ -156,9 +157,9 @@ class CompositeFunctionBinder implements Binder {
                        statistics: PaintPropertyStatistics,
                        start: number,
                        length: number,
-                       featureProperties: Object) {
-        const min = layer.getPaintValue(this.property, {zoom: this.zoom    }, featureProperties);
-        const max = layer.getPaintValue(this.property, {zoom: this.zoom + 1}, featureProperties);
+                       feature: Feature) {
+        const min = layer.getPaintValue(this.property, {zoom: this.zoom    }, feature);
+        const max = layer.getPaintValue(this.property, {zoom: this.zoom + 1}, feature);
 
         if (this.type === 'color') {
             const minColor = packColor(min);
@@ -294,7 +295,7 @@ class ProgramConfiguration {
         return paintPropertyStatistics;
     }
 
-    populatePaintArray(length: number, featureProperties: Object) {
+    populatePaintArray(length: number, feature: Feature) {
         const paintArray = this.paintVertexArray;
         if (paintArray.bytesPerElement === 0) return;
 
@@ -306,7 +307,7 @@ class ProgramConfiguration {
                 this.layer, paintArray,
                 this.paintPropertyStatistics,
                 start, length,
-                featureProperties);
+                feature);
         }
     }
 
@@ -377,9 +378,9 @@ class ProgramConfigurationSet {
         }
     }
 
-    populatePaintArrays(length: number, featureProperties: Object) {
+    populatePaintArrays(length: number, feature: Feature) {
         for (const key in this.programConfigurations) {
-            this.programConfigurations[key].populatePaintArray(length, featureProperties);
+            this.programConfigurations[key].populatePaintArray(length, feature);
         }
     }
 

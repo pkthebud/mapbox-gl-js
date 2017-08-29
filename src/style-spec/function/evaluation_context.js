@@ -12,6 +12,9 @@ import type UnitBezier from '@mapbox/unitbezier';
 import type { Type } from './types';
 import type { Value } from './values';
 import type { InterpolationType } from './definitions/curve';
+import type { Feature } from './index';
+
+const geometryTypes = ['Unknown', 'Point', 'LineString', 'Polygon'];
 
 class RuntimeError {
     name: string;
@@ -125,6 +128,11 @@ module.exports = () => ({
         const num = Number(value);
         ensure(value !== null && !isNaN(num), `Could not convert ${JSON.stringify(this.unwrap(value))} to number.`);
         return num;
+    },
+
+    geometryType: function(feature: Feature) {
+        return typeof feature.type === 'number' ?
+            geometryTypes[feature.type] : feature.type;
     },
 
     unwrap: function (maybeWrapped: Value) {

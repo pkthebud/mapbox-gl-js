@@ -4,7 +4,7 @@ const createFunction = require('../style-spec/function');
 const util = require('../util/util');
 const Curve = require('../style-spec/function/definitions/curve');
 
-import type {StyleFunction} from '../style-spec/function';
+import type {StyleFunction, Feature} from '../style-spec/function';
 
 /**
  * A style property declaration
@@ -42,8 +42,8 @@ class StyleDeclaration {
         }
     }
 
-    calculate(globalProperties?: {zoom: number}, featureProperties?: {}) {
-        const value = this.function(globalProperties && globalProperties.zoom, featureProperties || {});
+    calculate(globalProperties: {+zoom?: number} = {}, feature?: Feature) {
+        const value = this.function(globalProperties, feature);
         if (this.minimum !== undefined && value < this.minimum) {
             return this.minimum;
         }

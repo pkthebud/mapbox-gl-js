@@ -91,7 +91,7 @@ CompoundExpression.register(expressions, {
         'this.as(props, {kind: "Object"}, "feature.properties")'
     ],
     'geometry-type': [ StringType, [], () =>
-        'this.get(this.get(feature, "geometry", "feature"), "type", "feature.geometry")'
+        'this.geometryType(feature)'
     ],
     'id': [ ValueType, [], () =>
         'this.get(feature, "id", "feature")'

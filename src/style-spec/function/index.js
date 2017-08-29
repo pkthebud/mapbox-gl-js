@@ -17,18 +17,13 @@ const Let = require('./definitions/let');
 
 import type {Expression} from './expression';
 
-export type StyleFunction = (zoom?: number, featureProperties?: {}) => any;
+export type Feature = {
+    +type: 1 | 2 | 3 | 'Unknown' | 'Point' | 'MultiPoint' | 'LineString' | 'MultiLineString' | 'Polygon' | 'MultiPolygon',
+    +id?: any,
+    +properties: {[string]: any}
+};
 
-type FunctionSpecification = {|
-    type: 'identity',
-    property: string
-|} | {|
-    type: 'categorical' | 'exponential' | 'interval',
-    property?: string,
-    stops: Array<[mixed, mixed]>
-|} | {|
-    expression: Array<mixed>
-|};
+export type StyleFunction = (globalProperties: {+zoom?: number}, feature?: Feature) => any;
 
 type StylePropertySpecification = {
     type: 'number',
@@ -50,7 +45,10 @@ type StylePropertySpecification = {
     default?: Array<mixed>
 };
 
-function createFunction(parameters: FunctionSpecification, propertySpec: StylePropertySpecification) {
+type StylePropertyValue = null | string | number | Array<string> | Array<number>;
+type FunctionParameters = DataDrivenPropertyValueSpecification<StylePropertyValue>
+
+function createFunction(parameters: FunctionParameters, propertySpec: StylePropertySpecification): StyleFunction {
     let expr;
 
     if (!isFunctionDefinition(parameters)) {
@@ -58,7 +56,7 @@ function createFunction(parameters: FunctionSpecification, propertySpec: StylePr
         if (expr === null) {
             expr = getDefaultValue(propertySpec);
         }
-    } else if (parameters.expression) {
+    } else if (typeof parameters === 'object' && parameters !== null && typeof parameters.expression !== 'undefined') {
         expr = ['coalesce', parameters.expression, getDefaultValue(propertySpec)];
     } else {
         expr = convert.function(parameters, propertySpec);
@@ -68,9 +66,9 @@ function createFunction(parameters: FunctionSpecification, propertySpec: StylePr
     const compiled = compileExpression(expr, expectedType);
     if (compiled.result === 'success') {
         const warningHistory: {[key: string]: boolean} = {};
-        const f: StyleFunction = function (zoom, properties) {
+        const f = function (globalProperties: {+zoom?: number}, feature?: Feature) {
             try {
-                const val = compiled.function({zoom}, {properties});
+                const val = compiled.function(globalProperties, feature);
                 return val === null ? undefined : val;
             } catch (e) {
                 if (!warningHistory[e.message]) {
@@ -144,9 +142,15 @@ function findZoomCurve(expression: Expression): null | Curve | {key: string, err
     }
 }
 
-function isFunctionDefinition(value): boolean {
-    return typeof value === 'object' &&
-        Boolean(value.expression || value.stops || value.type === 'identity');
+function isFunctionDefinition(value: FunctionParameters): boolean {
+    if (value === null || typeof value !== 'object' || Array.isArray(value)) {
+        return false;
+    } else if (typeof value.expression !== 'undefined') {
+        return true;
+    } else {
+        return Array.isArray(value.stops) ||
+            (typeof value.type === 'string' && value.type === 'identity');
+    }
 }
 
 function getDefaultValue(propertySpec) {

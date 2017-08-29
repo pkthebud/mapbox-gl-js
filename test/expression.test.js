@@ -39,7 +39,14 @@ expressionSuite.run('js', {tests: tests}, (fixture) => {
         const evaluateResults = [];
         for (const input of evaluate) {
             try {
-                const output = compiled.function.apply(null, input);
+                const feature = { properties: input[1].properties || {} };
+                if ('id' in input[1]) {
+                    feature.id = input[1].id;
+                }
+                if ('geometry' in input[1]) {
+                    feature.type = input[1].geometry.type;
+                }
+                const output = compiled.function(input[0], feature);
                 evaluateResults.push(output);
             } catch (error) {
                 if (error.name === 'ExpressionEvaluationError') {
