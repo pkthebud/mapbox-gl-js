@@ -89,6 +89,16 @@ module.exports = () => ({
         }
     },
 
+    toColor: function (input: Value) {
+        if (typeof input === 'string') {
+            return this.parseColor(input);
+        } else if (Array.isArray(input) && (input.length === 3 || input.length === 4)) {
+            return this.rgba(...input);
+        } else {
+            throw new RuntimeError(`Could not parse color from value '${JSON.stringify(input)}'`);
+        }
+    },
+
     parseColor: function (input: string) {
         const c = parseColor(input);
         if (!c)
