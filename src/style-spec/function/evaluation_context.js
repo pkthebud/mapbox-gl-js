@@ -55,7 +55,7 @@ module.exports = () => ({
         return this.as(obj, ObjectType, name).hasOwnProperty(key);
     },
 
-    contains: function (array: Array<Value>, value: Value) {
+    contains: function (value: Value, array: Array<Value>) {
         const type = typeOf(value).kind;
         ensure(type !== 'Object' && type !== 'Array' && type !== 'Color',
             `"contains" does not support values of type ${type}`);

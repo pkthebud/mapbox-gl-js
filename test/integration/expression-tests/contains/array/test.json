@@ -1,6 +1,6 @@
 {
   "expectExpressionType": null,
-  "expression": ["contains", ["array", ["get", "arr"]], ["literal", []]],
+  "expression": ["contains", ["literal", []], ["array", ["get", "arr"]]],
   "inputs": [],
   "expected": {
     "compiled": {

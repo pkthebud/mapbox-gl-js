@@ -27,11 +27,11 @@ class Contains implements Expression {
         if (args.length !== 3)
             return context.error(`Expected 2 arguments, but found ${args.length - 1} instead.`);
 
-        const arrayExpr = parseExpression(args[1], context.concat(1, array(ValueType)));
+        const arrayExpr = parseExpression(args[2], context.concat(2, array(ValueType)));
         if (!arrayExpr) return null;
 
         const t: ArrayType = (arrayExpr.type: any);
-        const value = parseExpression(args[2], context.concat(2, t.itemType));
+        const value = parseExpression(args[1], context.concat(1, t.itemType));
         if (!value) return null;
 
         const itemType = value.type.kind;
@@ -43,11 +43,11 @@ class Contains implements Expression {
     }
 
     compile() {
-        return `this.contains(${this.array.compile()}, ${this.value.compile()})`;
+        return `this.contains(${this.value.compile()}, ${this.array.compile()})`;
     }
 
     serialize() {
-        return [ 'contains', this.array.serialize(), this.value.serialize() ];
+        return [ 'contains', this.value.serialize(), this.array.serialize() ];
     }
 
     accept(visitor: Visitor<Expression>) {

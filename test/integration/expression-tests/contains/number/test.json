@@ -2,8 +2,8 @@
   "expectExpressionType": null,
   "expression": [
     "contains",
-    ["literal", [1, 2, 3, 4]],
-    ["number", ["get", "item"]]
+    ["number", ["get", "item"]],
+    ["literal", [1, 2, 3, 4]]
   ],
   "inputs": [
     [{}, {"properties": {"item": 3}}],

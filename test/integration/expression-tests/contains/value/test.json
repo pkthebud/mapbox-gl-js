@@ -1,6 +1,6 @@
 {
   "expectExpressionType": null,
-  "expression": ["contains", ["array", ["get", "arr"]], ["get", "item"]],
+  "expression": ["contains", ["get", "item"], ["array", ["get", "arr"]]],
   "inputs": [
     [{}, {"properties": {"item": 3, "arr": [1, 2, 3, 4]}}],
     [{}, {"properties": {"item": 5, "arr": [1, 2, 3, 4]}}],
