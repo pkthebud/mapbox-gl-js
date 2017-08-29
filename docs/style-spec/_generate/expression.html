@@ -1,0 +1,13 @@
+<div class='col12 clearfix pad0y pad2x'>
+  <span class='code space-right'><a id='types-expression-<%= name %>' href='#types-expression-<%= name %>'><%= name %></a></span>
+  <% for (const overload of expressionTypes[name]) { %>
+    <div>
+{% highlight javascript %}
+[<%= JSON.stringify(name) %><%=renderParams(overload.parameters) %>]: <%= overload.type %>
+{% endhighlight %}
+</div>
+  <% } %>
+  <% if (expressionDocs[name] && expressionDocs[name].doc.trim().length) { %>
+  <div class="space-bottom1"><%= md(expressionDocs[name].doc) %></div>
+  <% } %>
+</div>
