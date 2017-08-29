@@ -57,7 +57,7 @@ CompoundExpression.register(expressions, {
     'to-number': [ NumberType, [ValueType], fromContext('toNumber') ],
     'to-boolean': [ BooleanType, [ValueType], ([v]) => `Boolean(${v})` ],
     'to-rgba': [ array(NumberType, 4), [ColorType], ([v]) => `${v}.value` ],
-    'parse-color': [ ColorType, [StringType], fromContext('parseColor') ],
+    'to-color': [ ColorType, [StringType], fromContext('parseColor') ],
     'rgb': [ ColorType, [NumberType, NumberType, NumberType],
         fromContext('rgba') ],
     'rgba': [ ColorType, [NumberType, NumberType, NumberType, NumberType],

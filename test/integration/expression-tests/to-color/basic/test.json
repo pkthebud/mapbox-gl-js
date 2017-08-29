@@ -1,6 +1,6 @@
 {
   "expectExpressionType": null,
-  "expression": ["parse-color", ["string", ["get", "x"]]],
+  "expression": ["to-color", ["string", ["get", "x"]]],
   "inputs": [
     [{}, {"properties": {"x": "red"}}],
     [{}, {"properties": {"x": "invalid"}}],

@@ -47,7 +47,7 @@ function convertFunction(parameters, propertySpec) {
 
 function annotateValue(value, spec) {
     if (spec.type === 'color') {
-        return ['parse-color', ['string', value]];
+        return ['to-color', ['string', value]];
     } else if (spec.type === 'array' && typeof spec.length === 'number') {
         return ['array', spec.value, spec.length, value];
     } else if (spec.type === 'array') {
@@ -82,7 +82,7 @@ function annotateValue(value, spec) {
 function convertValue(value, spec) {
     if (typeof value === 'undefined') return null;
     if (spec.type === 'color') {
-        return ['parse-color', value];
+        return ['to-color', value];
     } else if (spec.type === 'array') {
         return ['literal', value];
     } else {
