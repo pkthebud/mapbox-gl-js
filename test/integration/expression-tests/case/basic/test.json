@@ -1,21 +1,12 @@
 {
-  "expectExpressionType": null,
-  "expression": [
-    "string",
-    [
-      "case",
-      ["boolean", ["get", "x"]],
-      "x",
-      ["boolean", ["get", "y"]],
-      "y",
-      "otherwise"
-    ]
-  ],
+  "expectExpressionType": {"kind": "String"},
+  "expression": ["case", ["get", "x"], "x", ["get", "y"], "y", "otherwise"],
   "inputs": [
     [{}, {"properties": {"x": true, "y": true}}],
     [{}, {"properties": {"x": true, "y": false}}],
     [{}, {"properties": {"x": false, "y": true}}],
-    [{}, {"properties": {"x": false, "y": false}}]
+    [{}, {"properties": {"x": false, "y": false}}],
+    [{}, {"properties": {"x": "false", "y": false}}]
   ],
   "expected": {
     "compiled": {
@@ -24,6 +15,14 @@
       "isZoomConstant": true,
       "type": "String"
     },
-    "outputs": ["x", "x", "y", "otherwise"]
+    "outputs": [
+      "x",
+      "x",
+      "y",
+      "otherwise",
+      {
+        "error": "Expected value to be of type Boolean, but found String instead."
+      }
+    ]
   }
 }

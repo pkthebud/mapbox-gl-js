@@ -38,7 +38,10 @@ class Match implements Expression {
             return context.error(`Expected an even number of arguments.`);
 
         let inputType;
-        let outputType = context.expectedType;
+        let outputType;
+        if (context.expectedType && context.expectedType.kind !== 'Value') {
+            outputType = context.expectedType;
+        }
         const cases = {};
         const outputs = [];
         for (let i = 2; i < args.length - 1; i += 2) {

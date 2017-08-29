@@ -1,18 +1,11 @@
 {
   "expectExpressionType": null,
-  "expression": [
-    "match",
-    ["string", ["get", "x"]],
-    "a",
-    "Apple",
-    "b",
-    "Banana",
-    "Kumquat"
-  ],
+  "expression": ["match", ["get", "x"], "a", "Apple", "b", "Banana", "Kumquat"],
   "inputs": [
     [{}, {"properties": {"x": "a"}}],
     [{}, {"properties": {"x": "b"}}],
-    [{}, {"properties": {"x": "c"}}]
+    [{}, {"properties": {"x": "c"}}],
+    [{}, {"properties": {"x": 0}}]
   ],
   "expected": {
     "compiled": {
@@ -21,6 +14,6 @@
       "isZoomConstant": true,
       "type": "String"
     },
-    "outputs": ["Apple", "Banana", "Kumquat"]
+    "outputs": ["Apple", "Banana", "Kumquat", { "error": "Expected value to be of type String, but found Number instead." }]
   }
 }

@@ -2,20 +2,13 @@
   "expectExpressionType": null,
   "expression": [
     "to-rgba",
-    [
-      "curve",
-      ["exponential", 1],
-      ["number", ["get", "x"]],
-      1,
-      ["to-color", "red"],
-      11,
-      ["to-color", "blue"]
-    ]
+    ["curve", ["exponential", 1], ["get", "x"], 1, "red", 11, ["get", "color"]]
   ],
   "inputs": [
-    [{}, {"properties": {"x": 0}}],
-    [{}, {"properties": {"x": 5}}],
-    [{}, {"properties": {"x": 11}}]
+    [{}, {"properties": {"x": 0, "color": "blue"}}],
+    [{}, {"properties": {"x": 5, "color": "blue"}}],
+    [{}, {"properties": {"x": 11, "color": "blue"}}],
+    [{}, {"properties": {"x": 11, "color": "oops blue"}}]
   ],
   "expected": {
     "compiled": {
@@ -24,6 +17,11 @@
       "isZoomConstant": true,
       "type": "Array<Number, 4>"
     },
-    "outputs": [[1, 0, 0, 1], [0.6, 0, 0.4, 1], [0, 0, 1, 1]]
+    "outputs": [
+      [1, 0, 0, 1],
+      [0.6, 0, 0.4, 1],
+      [0, 0, 1, 1],
+      {"error": "Could not parse color from value 'oops blue'"}
+    ]
   }
 }

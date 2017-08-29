@@ -21,7 +21,10 @@ class Coalesce implements Expression {
         if (args.length < 2) {
             return context.error("Expectected at least one argument.");
         }
-        let outputType = context.expectedType;
+        let outputType: Type = (null: any);
+        if (context.expectedType && context.expectedType.kind !== 'Value') {
+            outputType = context.expectedType;
+        }
         const parsedArgs = [];
         for (const arg of args.slice(1)) {
             const argContext = context.concat(1 + parsedArgs.length, outputType);

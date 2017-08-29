@@ -63,20 +63,32 @@ class CompoundExpression implements Expression {
             return context.error(`Unknown expression "${op}". If you wanted a literal array, use ["literal", [...]].`, 0);
         }
 
-        // First parse all the args
-        const parsedArgs: Array<Expression> = [];
-        for (const arg of args.slice(1)) {
-            const parsed = parseExpression(arg, context.concat(1 + parsedArgs.length));
-            if (!parsed) return null;
-            parsedArgs.push(parsed);
-        }
-
         // Now check argument types against each signature
         const type = Array.isArray(definition) ?
             definition[0] : definition.type;
+
         const overloads = Array.isArray(definition) ?
             [[definition[1], definition[2]]] :
-            definition.overloads;
+            definition.overloads.filter(overload => (
+                !Array.isArray(overload[0][0]) || // varags
+                overload[0][0].length === args.length - 1 // correct param count
+            ));
+
+        // First parse all the args
+        const parsedArgs: Array<Expression> = [];
+        for (let i = 1; i < args.length; i++) {
+            const arg = args[i];
+            let expected;
+            if (overloads.length === 1) {
+                const params = overloads[0][0];
+                expected = Array.isArray(params) ?
+                    params[i - 1] :
+                    params.type;
+            }
+            const parsed = parseExpression(arg, context.concat(1 + parsedArgs.length, expected));
+            if (!parsed) return null;
+            parsedArgs.push(parsed);
+        }
 
         let signatureContext: ParsingContext = (null: any);
 

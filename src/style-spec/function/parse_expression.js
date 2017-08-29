@@ -1,20 +1,12 @@
 // @flow
 
-const {
-    NullType,
-    NumberType,
-    StringType,
-    BooleanType,
-    ObjectType,
-    ColorType,
-    ValueType,
-    array,
-    toString
-} = require('./types');
+const assert = require('assert');
 
 const checkSubtype = require('./check_subtype');
 
+import type {Type} from './types';
 import type {ParsingContext, Expression} from './expression';
+import type {CompoundExpression} from './compound_expression';
 
 /**
  * Parse the given JSON expression.
@@ -43,13 +35,25 @@ function parseExpression(expr: mixed, context: ParsingContext): ?Expression {
 
         const Expr = context.definitions[op];
         if (Expr) {
-            const parsed = Expr.parse(expr, context);
+            let parsed = Expr.parse(expr, context);
             if (!parsed) return null;
-            if (context.expectedType && checkSubtype(context.expectedType, parsed.type, context)) {
-                return null;
-            } else {
-                return parsed;
+            const expected = context.expectedType;
+            const actual = parsed.type;
+            if (expected) {
+                // when we expect a specific type but have a Value, wrap it
+                // in a refining assertion
+                if (expected.kind !== 'Value' && actual.kind === 'Value') {
+                    parsed = wrapForType(expected, parsed, context);
+                } else if (expected.kind === 'Color' && actual.kind === 'String') {
+                    parsed = wrapForType(expected, parsed, context);
+                }
+
+                if (checkSubtype(expected, parsed.type, context)) {
+                    return null;
+                }
             }
+
+            return parsed;
         }
 
         return context.error(`Unknown expression "${op}". If you wanted a literal array, use ["literal", [...]].`, 0);
@@ -62,5 +66,33 @@ function parseExpression(expr: mixed, context: ParsingContext): ?Expression {
     }
 }
 
+const typeWrappers: {[string]: string} = {
+    'Number': 'number',
+    'String': 'string',
+    'Boolean': 'boolean',
+    'Color': 'to-color'
+};
+
+function wrapForType(expected: Type, expression: Expression, context: ParsingContext) {
+    const wrapper = typeWrappers[expected.kind];
+    if (!wrapper) {
+        return expression;
+    }
+
+    // weird workaround for circular dependency between CompoundExpression and
+    // parseExpression
+    const CompoundExpr: Class<CompoundExpression> = (context.definitions[wrapper]: any);
+
+    const definition = CompoundExpr.definitions[wrapper];
+
+    assert(
+        Array.isArray(definition) && // the wrapper expression has no overloads
+        Array.isArray(definition[1]) && // its inputs isn't Varargs
+        definition[1].length === 1 && // it takes one parameter
+        !checkSubtype(definition[1][0], expression.type) // matching the expression we're trying to wrap
+    );
+
+    return new CompoundExpr(expression.key, wrapper, expected, definition[2], [expression]);
+}
 
 module.exports = parseExpression;

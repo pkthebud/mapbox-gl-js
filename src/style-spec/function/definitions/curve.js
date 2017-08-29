@@ -104,7 +104,10 @@ class Curve implements Expression {
 
         const stops: Stops = [];
 
-        let outputType: Type = (context.expectedType: any);
+        let outputType: Type = (null: any);
+        if (context.expectedType && context.expectedType.kind !== 'Value') {
+            outputType = context.expectedType;
+        }
         for (let i = 0; i < rest.length; i += 2) {
             const label = rest[i];
             const value = rest[i + 1];

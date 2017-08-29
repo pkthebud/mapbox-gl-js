@@ -29,7 +29,10 @@ class Case implements Expression {
         if (args.length % 2 !== 0)
             return context.error(`Expected an odd number of arguments.`);
 
-        let outputType: ?Type = context.expectedType;
+        let outputType: ?Type;
+        if (context.expectedType && context.expectedType.kind !== 'Value') {
+            outputType = context.expectedType;
+        }
 
         const branches = [];
         for (let i = 1; i < args.length - 1; i += 2) {
