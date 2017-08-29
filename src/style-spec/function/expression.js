@@ -3,17 +3,6 @@
 import type {
     Type,
 } from './types';
-const {
-    NullType,
-    NumberType,
-    StringType,
-    BooleanType,
-    ObjectType,
-    ColorType,
-    ValueType,
-    array,
-    toString
-} = require('./types');
 
 export interface Expression {
     key: string;
@@ -134,119 +123,8 @@ class ParsingContext {
     }
 }
 
-/**
- * Parse the given JSON expression.
- *
- * @param expectedType If provided, the parsed expression will be checked
- * against this type.  Additionally, `expectedType` will be pssed to
- * Expression#parse(), wherein it may be used to infer child expression types
- *
- * @private
- */
-function parseExpression(expr: mixed, context: ParsingContext): ?Expression {
-    if (expr === null || typeof expr === 'string' || typeof expr === 'boolean' || typeof expr === 'number') {
-        expr = ['literal', expr];
-    }
-
-    if (Array.isArray(expr)) {
-        if (expr.length === 0) {
-            return context.error(`Expected an array with at least one element. If you wanted a literal array, use ["literal", []].`);
-        }
-
-        const op = expr[0];
-        if (typeof op !== 'string') {
-            context.error(`Expression name must be a string, but found ${typeof op} instead. If you wanted a literal array, use ["literal", [...]].`, 0);
-            return null;
-        }
-
-        const Expr = context.definitions[op];
-        if (Expr) {
-            const parsed = Expr.parse(expr, context);
-            if (!parsed) return null;
-            if (context.expectedType && checkSubtype(context.expectedType, parsed.type, context)) {
-                return null;
-            } else {
-                return parsed;
-            }
-        }
-
-        return context.error(`Unknown expression "${op}". If you wanted a literal array, use ["literal", [...]].`, 0);
-    } else if (typeof expr === 'undefined') {
-        return context.error(`'undefined' value invalid. Use null instead.`);
-    } else if (typeof expr === 'object') {
-        return context.error(`Bare objects invalid. Use ["literal", {...}] instead.`);
-    } else {
-        return context.error(`Expected an array, but found ${typeof expr} instead.`);
-    }
-}
-
-/**
- * Returns null if the type matches, or an error message if not.
- *
- * If `context` is provided, then also push the error to it via
- * `context.error()`
- *
- * @private
- */
-function checkSubtype(
-    expected: Type,
-    t: Type,
-    context?: ParsingContext
-): ?string {
-    const error = `Expected ${toString(expected)} but found ${toString(t)} instead.`;
-
-    // Error is a subtype of every type
-    if (t.kind === 'Error') {
-        return null;
-    }
-
-    if (expected.kind === 'Value') {
-        if (t.kind === 'Value') return null;
-        const members = [
-            NullType,
-            NumberType,
-            StringType,
-            BooleanType,
-            ColorType,
-            ObjectType,
-            array(ValueType)
-        ];
-
-        for (const memberType of members) {
-            if (!checkSubtype(memberType, t)) {
-                return null;
-            }
-        }
-
-        if (context) context.error(error);
-        return error;
-    } else if (expected.kind === 'Array') {
-        if (t.kind === 'Array') {
-            const itemError = checkSubtype(expected.itemType, t.itemType);
-            if (itemError) {
-                if (context) context.error(error);
-                return error;
-            } else if (typeof expected.N === 'number' && expected.N !== t.N) {
-                if (context) context.error(error);
-                return error;
-            } else {
-                return null;
-            }
-        } else {
-            if (context) context.error(error);
-            return error;
-        }
-    } else {
-        if (t.kind === expected.kind) return null;
-        if (context) context.error(error);
-        return error;
-    }
-}
-
 module.exports = {
     Scope,
     ParsingContext,
-    ParsingError,
-    parseExpression,
-    checkSubtype
+    ParsingError
 };

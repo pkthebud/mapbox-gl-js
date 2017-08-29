@@ -1,6 +1,6 @@
 // @flow
 
-const { parseExpression } = require('../expression');
+const parseExpression = require('../parse_expression');
 import type { Type } from '../types';
 import type { Expression, ParsingContext }  from '../expression';
 

@@ -5,7 +5,7 @@ const parseColor = require('../util/parse_color');
 const interpolate = require('../util/interpolate');
 const {toString, NumberType, ObjectType} = require('./types');
 const {Color, typeOf, isValue} = require('./values');
-const {checkSubtype} = require('./expression');
+const checkSubtype = require('./check_subtype');
 const Curve = require('./definitions/curve');
 
 import type UnitBezier from '@mapbox/unitbezier';

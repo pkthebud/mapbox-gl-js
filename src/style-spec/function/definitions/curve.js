@@ -7,7 +7,7 @@ const {
     toString,
     NumberType
 } = require('../types');
-const { parseExpression } = require('../expression');
+const parseExpression = require('../parse_expression');
 
 import type { Expression, ParsingContext } from '../expression';
 import type { Type } from '../types';

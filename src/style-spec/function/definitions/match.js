@@ -1,7 +1,8 @@
 // @flow
 
 const assert = require('assert');
-const { parseExpression, checkSubtype } = require('../expression');
+const parseExpression = require('../parse_expression');
+const checkSubtype = require('../check_subtype');
 const { typeOf } = require('../values');
 
 import type { Expression, ParsingContext } from '../expression';

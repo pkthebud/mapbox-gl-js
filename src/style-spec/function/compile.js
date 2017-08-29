@@ -4,9 +4,9 @@ const assert = require('assert');
 module.exports = compileExpression;
 
 const {
-    parseExpression,
     ParsingContext
 } = require('./expression');
+const parseExpression = require('./parse_expression');
 const { CompoundExpression } = require('./compound_expression');
 const definitions = require('./definitions');
 const evaluationContext = require('./evaluation_context');
